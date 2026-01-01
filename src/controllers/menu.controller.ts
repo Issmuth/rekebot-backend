@@ -1,0 +1,173 @@
+import { Response, NextFunction, Request } from "express";
+import { menuService } from "../services/menu.service";
+import { AuthenticatedRequest } from "../middleware/auth";
+import { AppError } from "../middleware/errorHandler";
+import { ErrorCode } from "../utils/errors";
+
+/**
+ * Get all menu items
+ * GET /api/menu
+ * Requirements: 2.4
+ */
+export const getAllMenuItems = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const includeInactive = req.query.includeInactive === "true";
+    const menuItems = await menuService.findAll(includeInactive);
+
+    res.json({
+      success: true,
+      data: menuItems,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get menu item by ID
+ * GET /api/menu/:id
+ */
+export const getMenuItemById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const menuItem = await menuService.findById(id);
+
+    if (!menuItem) {
+      throw new AppError(
+        404,
+        ErrorCode.NOT_FOUND_MENU_ITEM,
+        "Menu item not found"
+      );
+    }
+
+    res.json({
+      success: true,
+      data: menuItem,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get menu items with availability status
+ * GET /api/menu/availability
+ * Requirements: 7.1, 7.3, 7.4
+ */
+export const getMenuAvailability = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const availability = await menuService.getAvailability();
+
+    res.json({
+      success: true,
+      data: availability,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Create a new menu item
+ * POST /api/menu
+ * Requirements: 2.1, 2.5
+ */
+export const createMenuItem = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name, price, category, ingredients } = req.body;
+
+    // Basic validation - detailed validation in service
+    if (!name || price === undefined || !category || !ingredients) {
+      throw new AppError(
+        400,
+        ErrorCode.VALIDATION_REQUIRED_FIELD,
+        "Name, price, category, and ingredients are required"
+      );
+    }
+
+    const menuItem = await menuService.create({
+      name,
+      price,
+      category,
+      ingredients,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: menuItem,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Update a menu item
+ * PUT /api/menu/:id
+ * Requirements: 2.2, 2.5
+ */
+export const updateMenuItem = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { name, price, category, ingredients, isActive } = req.body;
+
+    const menuItem = await menuService.update(id, {
+      name,
+      price,
+      category,
+      ingredients,
+      isActive,
+    });
+
+    res.json({
+      success: true,
+      data: menuItem,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Soft delete a menu item
+ * DELETE /api/menu/:id
+ * Requirements: 2.3
+ */
+export const deleteMenuItem = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    await menuService.delete(id);
+
+    res.json({
+      success: true,
+      message: "Menu item deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
