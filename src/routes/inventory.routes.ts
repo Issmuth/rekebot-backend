@@ -7,10 +7,19 @@ import {
   updateIngredient,
   updateStock,
   checkAvailability,
+  getInventoryHistory,
 } from "../controllers/inventory.controller";
 import { authenticate, requireAdmin } from "../middleware/auth";
 
 const router = Router();
+
+/**
+ * GET /api/ingredients/history
+ * Get inventory history/transactions
+ * Requirements: 4.4
+ * Note: This route must be defined before /:id to avoid conflicts
+ */
+router.get("/history", authenticate, requireAdmin, getInventoryHistory);
 
 /**
  * GET /api/ingredients/low-stock

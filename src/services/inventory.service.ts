@@ -15,6 +15,7 @@ import { Decimal } from "@prisma/client/runtime/library";
 export interface Ingredient {
   id: string;
   name: string;
+  nameAm?: string | null;
   unit: string;
   currentStock: number;
   minThreshold: number;
@@ -33,8 +34,15 @@ export interface StockAdjustmentEntry {
   createdAt: Date;
 }
 
+export interface StockHistoryEntry extends StockAdjustmentEntry {
+  ingredientName: string;
+  unit: string;
+  ingredientId: string;
+}
+
 export interface UpdateIngredientDTO {
   name?: string;
+  nameAm?: string;
   unit?: string;
   minThreshold?: number;
 }
@@ -56,6 +64,7 @@ export class InventoryService {
     // Create ingredient with initial stock adjustment
     const ingredient = await prisma.ingredient.create({
       data: {
+        nameAm: data.nameAm,
         name: data.name,
         unit: data.unit,
         currentStock: data.currentStock,
@@ -95,6 +104,7 @@ export class InventoryService {
       where: { id },
       data: {
         ...(data.name !== undefined && { name: data.name }),
+        ...(data.nameAm !== undefined && { nameAm: data.nameAm }),
         ...(data.unit !== undefined && { unit: data.unit }),
         ...(data.minThreshold !== undefined && {
           minThreshold: data.minThreshold,
@@ -269,6 +279,35 @@ export class InventoryService {
     return allIngredients
       .filter((ing) => Number(ing.currentStock) < Number(ing.minThreshold))
       .map(this.mapToIngredient);
+  }
+
+  /**
+   * Get stock history/adjustments
+   * Requirements: 4.4
+   */
+  async getHistory(limit=50): Promise<StockHistoryEntry[]> {
+    const adjustments = await prisma.stockAdjustment.findMany({
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      include: {
+        ingredient: {
+          select: {
+            name: true,
+            unit: true,
+          },
+        },
+      },
+    });
+
+    return adjustments.map((adj) => ({
+      id: adj.id,
+      quantity: Number(adj.quantity),
+      reason: adj.reason,
+      createdAt: adj.createdAt,
+      ingredientName: adj.ingredient.name,
+      unit: adj.ingredient.unit,
+      ingredientId: adj.ingredientId,
+    }));
   }
 
   /**

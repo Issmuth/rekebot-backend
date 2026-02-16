@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { uploadReceipt as uploadMiddleware } from "../middleware/upload";
 import {
   getAllOrders,
   getOrderById,
@@ -7,6 +8,7 @@ import {
   cancelOrder,
   confirmPayment,
   uploadReceipt,
+  verifyOrder,
 } from "../controllers/order.controller";
 
 const router = Router();
@@ -50,13 +52,27 @@ router.delete("/:id", cancelOrder);
  * Confirm payment for an order (employee)
  * Requirements: 3.5, 3.6, 3.7
  */
-router.post("/:id/confirm", confirmPayment);
+router.post(
+  "/:id/confirm",
+  uploadMiddleware.single("receiptImage"),
+  confirmPayment
+);
 
 /**
  * POST /api/orders/:id/receipt
  * Upload receipt for an order
  * Requirements: 3.7, 3.8
  */
-router.post("/:id/receipt", uploadReceipt);
+router.post(
+  "/:id/receipt",
+  uploadMiddleware.single("receiptImage"),
+  uploadReceipt
+);
+
+/**
+ * POST /api/orders/:id/verify
+ * Verify order (admin)
+ */
+router.post("/:id/verify", verifyOrder);
 
 export default router;

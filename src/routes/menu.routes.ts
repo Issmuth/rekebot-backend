@@ -3,11 +3,14 @@ import {
   getAllMenuItems,
   getMenuItemById,
   getMenuAvailability,
+  getMenuItemStats,
+  getMenuItemStatsForDate,
   createMenuItem,
   updateMenuItem,
   deleteMenuItem,
 } from "../controllers/menu.controller";
 import { authenticate, requireAdmin } from "../middleware/auth";
+import { uploadMenuImage } from "../middleware/upload";
 
 const router = Router();
 
@@ -27,6 +30,23 @@ router.get("/availability", getMenuAvailability);
 router.get("/", getAllMenuItems);
 
 /**
+ * GET /api/menu/:id/stats
+ * Get sales statistics for a menu item
+ */
+router.get("/:id/stats", authenticate, requireAdmin, getMenuItemStats);
+
+/**
+ * GET /api/menu/:id/stats/date
+ * Get sales statistics for a specific date
+ */
+router.get(
+  "/:id/stats/date",
+  authenticate,
+  requireAdmin,
+  getMenuItemStatsForDate
+);
+
+/**
  * GET /api/menu/:id
  * Get a specific menu item by ID
  */
@@ -37,14 +57,26 @@ router.get("/:id", getMenuItemById);
  * Create a new menu item (admin only)
  * Requirements: 2.1, 2.5
  */
-router.post("/", authenticate, requireAdmin, createMenuItem);
+router.post(
+  "/",
+  authenticate,
+  requireAdmin,
+  uploadMenuImage.single("image"),
+  createMenuItem
+);
 
 /**
  * PUT /api/menu/:id
  * Update a menu item (admin only)
  * Requirements: 2.2, 2.5
  */
-router.put("/:id", authenticate, requireAdmin, updateMenuItem);
+router.put(
+  "/:id",
+  authenticate,
+  requireAdmin,
+  uploadMenuImage.single("image"),
+  updateMenuItem
+);
 
 /**
  * DELETE /api/menu/:id

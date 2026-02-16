@@ -89,7 +89,7 @@ export const createIngredient = async (
   next: NextFunction
 ) => {
   try {
-    const { name, unit, currentStock, minThreshold } = req.body;
+    const { name, nameAm, unit, currentStock, minThreshold } = req.body;
 
     // Basic validation - detailed validation in service
     if (
@@ -107,6 +107,7 @@ export const createIngredient = async (
 
     const ingredient = await inventoryService.createIngredient({
       name,
+      nameAm,
       unit,
       currentStock,
       minThreshold,
@@ -133,10 +134,11 @@ export const updateIngredient = async (
 ) => {
   try {
     const { id } = req.params;
-    const { name, unit, minThreshold } = req.body;
+    const { name, nameAm, unit, minThreshold } = req.body;
 
     const ingredient = await inventoryService.updateIngredient(id, {
       name,
+      nameAm,
       unit,
       minThreshold,
     });
@@ -205,6 +207,29 @@ export const checkAvailability = async (
     res.json({
       success: true,
       data: availability,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get inventory history
+ * GET /api/inventory/history
+ * Requirements: 4.4
+ */
+export const getInventoryHistory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const limit = req.query.limit ? Number(req.query.limit) : 50;
+    const history = await inventoryService.getHistory(limit);
+
+    res.json({
+      success: true,
+      data: history,
     });
   } catch (error) {
     next(error);

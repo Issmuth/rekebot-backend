@@ -1,8 +1,10 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
+//  binaryTargets = ["debian-openssl-1.1.x"]
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -15,6 +17,7 @@ model User {
   email                  String                  @unique
   passwordHash           String
   name                   String
+  nameAm                 String?
   role                   Role
   salary                 Decimal?
   hireDate               DateTime
@@ -41,11 +44,20 @@ enum Role {
   EMPLOYEE
 }
 
+enum Station {
+  BAR
+  KITCHEN
+}
+
 model MenuItem {
   id          String               @id @default(uuid())
   name        String
+  nameAm      String?
   price       Decimal
   category    String
+  categoryAm  String?
+  station     Station              @default(BAR)
+  imageUrl    String?
   isActive    Boolean              @default(true)
   ingredients MenuItemIngredient[]
   orderItems  OrderItem[]
@@ -55,6 +67,7 @@ model MenuItem {
 
 model Ingredient {
   id               String               @id @default(uuid())
+  nameAm           String?
   name             String
   unit             String
   currentStock     Decimal
@@ -89,6 +102,8 @@ model Order {
   id          String       @id @default(uuid())
   waiterId    String
   waiter      User         @relation(fields: [waiterId], references: [id])
+  tableNumber String?
+  dailyOrderNumber Int     @default(0)
   status      OrderStatus  @default(PENDING)
   paymentType PaymentType?
   receiptUrl  String?
@@ -101,6 +116,7 @@ model Order {
 
 enum OrderStatus {
   PENDING
+  PENDING_VERIFICATION
   PAID
   CANCELLED
 }

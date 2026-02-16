@@ -3,6 +3,8 @@ import {
   CreateMenuItemDTO,
   UpdateMenuItemDTO,
   MenuItemAvailability,
+  MenuItemStats,
+  Station,
 } from "../types";
 import { ErrorCode, notFoundError, validationError } from "../utils/errors";
 import { Decimal } from "@prisma/client/runtime/library";
@@ -10,8 +12,12 @@ import { Decimal } from "@prisma/client/runtime/library";
 export interface MenuItem {
   id: string;
   name: string;
+  nameAm?: string | null;
   price: number;
   category: string;
+  categoryAm?: string | null;
+  station: Station;
+  imageUrl?: string | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -24,6 +30,7 @@ export interface MenuItemWithIngredients extends MenuItem {
 export interface IngredientMapping {
   ingredientId: string;
   ingredientName: string;
+  ingredientNameAm?: string | null;
   unit: string;
   quantityPerServing: number;
 }
@@ -46,8 +53,12 @@ export class MenuService {
     const menuItem = await prisma.menuItem.create({
       data: {
         name: data.name,
+        nameAm: data.nameAm,
         price: data.price,
+        station: data.station,
         category: data.category,
+        categoryAm: data.categoryAm,
+        imageUrl: data.imageUrl,
         ingredients: {
           create: data.ingredients.map((ing) => ({
             ingredientId: ing.ingredientId,
@@ -86,6 +97,7 @@ export class MenuService {
 
     // Validate data if updating required fields
     if (
+      data.nameAm !== undefined ||
       data.name !== undefined ||
       data.price !== undefined ||
       data.category !== undefined
@@ -113,9 +125,13 @@ export class MenuService {
         where: { id },
         data: {
           ...(data.name !== undefined && { name: data.name }),
+          ...(data.nameAm !== undefined && { nameAm: data.nameAm }),
+          ...(data.station !== undefined && { station: data.station }),
           ...(data.price !== undefined && { price: data.price }),
           ...(data.category !== undefined && { category: data.category }),
+          ...(data.categoryAm !== undefined && { categoryAm: data.categoryAm }),
           ...(data.isActive !== undefined && { isActive: data.isActive }),
+          ...(data.imageUrl !== undefined && { imageUrl: data.imageUrl }),
           ...(data.ingredients && {
             ingredients: {
               create: data.ingredients.map((ing) => ({
@@ -201,6 +217,75 @@ export class MenuService {
     }
 
     return this.mapToMenuItemWithIngredients(menuItem);
+  }
+
+  /**
+   * Get sales statistics for a menu item
+   */
+  async getStats(id: string): Promise<MenuItemStats> {
+    const now = new Date();
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+
+    const weekStart = new Date(todayStart);
+    weekStart.setDate(weekStart.getDate() - 7);
+
+    const monthStart = new Date(todayStart);
+    monthStart.setDate(monthStart.getDate() - 30);
+
+    const getCount = async (fromDate: Date) => {
+      const result = await prisma.orderItem.aggregate({
+        _sum: {
+          quantity: true,
+        },
+        where: {
+          menuItemId: id,
+          order: {
+            createdAt: {
+              gte: fromDate,
+            },
+            status: "PAID",
+          },
+        },
+      });
+      return result._sum.quantity || 0;
+    };
+
+    const [daily, weekly, monthly] = await Promise.all([
+      getCount(todayStart),
+      getCount(weekStart),
+      getCount(monthStart),
+    ]);
+
+    return { daily, weekly, monthly };
+  }
+
+  /**
+   * Get sales statistics for a specific date
+   */
+  async getStatsForDate(id: string, date: Date): Promise<number> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const result = await prisma.orderItem.aggregate({
+      _sum: {
+        quantity: true,
+      },
+      where: {
+        menuItemId: id,
+        order: {
+          createdAt: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
+          status: "PAID",
+        },
+      },
+    });
+    return result._sum.quantity || 0;
   }
 
   /**
@@ -391,8 +476,12 @@ export class MenuService {
   private mapToMenuItemWithIngredients(item: {
     id: string;
     name: string;
+    nameAm?: string | null;
     price: Decimal;
     category: string;
+    categoryAm?: string | null;
+    station: Station; // Added station property
+    imageUrl?: string | null;
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -401,6 +490,7 @@ export class MenuService {
       quantityPerServing: Decimal;
       ingredient: {
         name: string;
+        nameAm?: string | null;
         unit: string;
       };
     }>;
@@ -408,14 +498,19 @@ export class MenuService {
     return {
       id: item.id,
       name: item.name,
+      nameAm: item.nameAm,
       price: Number(item.price),
       category: item.category,
+      categoryAm: item.categoryAm,
+      station: item.station, // Added station property mapping
+      imageUrl: item.imageUrl,
       isActive: item.isActive,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
       ingredients: item.ingredients.map((ing) => ({
         ingredientId: ing.ingredientId,
         ingredientName: ing.ingredient.name,
+        ingredientNameAm: ing.ingredient.nameAm,
         unit: ing.ingredient.unit,
         quantityPerServing: Number(ing.quantityPerServing),
       })),

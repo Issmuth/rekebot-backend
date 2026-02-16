@@ -124,6 +124,7 @@ export class AuthService {
       select: {
         id: true,
         name: true,
+        nameAm: true,
       },
       orderBy: {
         name: "asc",

@@ -12,10 +12,12 @@ import { Decimal } from "@prisma/client/runtime/library";
 export interface Order {
   id: string;
   waiterId: string;
-  waiterName: string;
-  status: "PENDING" | "PAID" | "CANCELLED";
+  waiter: { name: string; nameAm?: string | null };
+  tableNumber: string | null;
+  dailyOrderNumber: number;
+  status: "PENDING" | "PENDING_VERIFICATION" | "PAID" | "CANCELLED";
   paymentType: PaymentType | null;
-  receiptUrl: string | null;
+  receiptImage: string | null;
   total: number;
   items: OrderItemDetail[];
   createdAt: Date;
@@ -26,14 +28,22 @@ export interface Order {
 export interface OrderItemDetail {
   id: string;
   menuItemId: string;
-  menuItemName: string;
   quantity: number;
   unitPrice: number;
+  menuItemName: string;
+  menuItemNameAm?: string | null;
+  menuItem: {
+    name: string;
+    nameAm?: string | null;
+    category: string;
+    station: string;
+  };
 }
 
 export interface CreateOrderDTO {
   waiterId: string;
   items: OrderItemDTO[];
+  tableNumber?: string;
 }
 
 export interface UpdateOrderDTO {
@@ -85,10 +95,32 @@ export class OrderService {
     // Calculate total
     const total = this.calculateTotal(data.items, menuItemMap);
 
+    // Calculate daily order number
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const endOfToday = new Date(today);
+    endOfToday.setDate(endOfToday.getDate() + 1);
+
+    const lastOrder = await prisma.order.findFirst({
+      where: {
+        createdAt: {
+          gte: today,
+          lt: endOfToday,
+        },
+      },
+      orderBy: {
+        dailyOrderNumber: "desc",
+      },
+    });
+
+    const dailyOrderNumber = (lastOrder?.dailyOrderNumber || 0) + 1;
+
     // Create order with items
     const order = await prisma.order.create({
       data: {
+        dailyOrderNumber,
         waiterId: data.waiterId,
+        tableNumber: data.tableNumber,
         total,
         items: {
           create: data.items.map((item) => ({
@@ -99,10 +131,10 @@ export class OrderService {
         },
       },
       include: {
-        waiter: { select: { name: true } },
+        waiter: { select: { name: true, nameAm: true } },
         items: {
           include: {
-            menuItem: { select: { name: true } },
+            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
           },
         },
       },
@@ -182,10 +214,10 @@ export class OrderService {
           },
         },
         include: {
-          waiter: { select: { name: true } },
+          waiter: { select: { name: true, nameAm: true } },
           items: {
             include: {
-              menuItem: { select: { name: true } },
+              menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
             },
           },
         },
@@ -271,20 +303,24 @@ export class OrderService {
     // Deduct stock (this validates availability too)
     await inventoryService.deductStock(orderItems);
 
+    const newStatus =
+      data.paymentType === "DIGITAL" ? "PENDING_VERIFICATION" : "PAID";
+    const paidAt = data.paymentType === "DIGITAL" ? null : new Date();
+
     // Update order status
     const order = await prisma.order.update({
       where: { id },
       data: {
-        status: "PAID",
+        status: newStatus,
         paymentType: data.paymentType,
         receiptUrl: data.receiptImage || null,
-        paidAt: new Date(),
+        paidAt: paidAt,
       },
       include: {
-        waiter: { select: { name: true } },
+        waiter: { select: { name: true, nameAm: true } },
         items: {
           include: {
-            menuItem: { select: { name: true } },
+            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
           },
         },
       },
@@ -312,10 +348,10 @@ export class OrderService {
       where: { id: orderId },
       data: { receiptUrl },
       include: {
-        waiter: { select: { name: true } },
+        waiter: { select: { name: true, nameAm: true } },
         items: {
           include: {
-            menuItem: { select: { name: true } },
+            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
           },
         },
       },
@@ -326,10 +362,11 @@ export class OrderService {
 
   /**
    * Find all orders with optional filters
+   * Requirements: 3.1
    */
   async findAll(filters?: {
     waiterId?: string;
-    status?: "PENDING" | "PAID" | "CANCELLED";
+    status?: "PENDING" | "PENDING_VERIFICATION" | "PAID" | "CANCELLED";
   }): Promise<Order[]> {
     const where: Record<string, unknown> = {};
 
@@ -344,10 +381,10 @@ export class OrderService {
     const orders = await prisma.order.findMany({
       where,
       include: {
-        waiter: { select: { name: true } },
+        waiter: { select: { name: true, nameAm: true } },
         items: {
           include: {
-            menuItem: { select: { name: true } },
+            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
           },
         },
       },
@@ -364,10 +401,10 @@ export class OrderService {
     const order = await prisma.order.findUnique({
       where: { id },
       include: {
-        waiter: { select: { name: true } },
+        waiter: { select: { name: true, nameAm: true } },
         items: {
           include: {
-            menuItem: { select: { name: true } },
+            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
           },
         },
       },
@@ -452,41 +489,70 @@ export class OrderService {
   }
 
   /**
+   * Verify a pending order (Admin updates status to PAID)
+   */
+  async verifyOrder(id: string): Promise<Order> {
+    const existing = await prisma.order.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
+    }
+
+    if (existing.status !== "PENDING_VERIFICATION") {
+      throw businessError(
+        ErrorCode.BUSINESS_ORDER_ALREADY_PAID,
+        "Order is not pending verification"
+      );
+    }
+
+    const order = await prisma.order.update({
+      where: { id },
+      data: {
+        status: "PAID",
+        paidAt: new Date(),
+      },
+      include: {
+        waiter: { select: { name: true, nameAm: true } },
+        items: {
+          include: {
+            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
+          },
+        },
+      },
+    });
+
+    return this.mapToOrder(order);
+  }
+
+  /**
    * Map Prisma Order to Order type
    */
-  private mapToOrder(order: {
-    id: string;
-    waiterId: string;
-    waiter: { name: string };
-    status: "PENDING" | "PAID" | "CANCELLED";
-    paymentType: "CASH" | "DIGITAL" | null;
-    receiptUrl: string | null;
-    total: Decimal;
-    items: Array<{
-      id: string;
-      menuItemId: string;
-      menuItem: { name: string };
-      quantity: number;
-      unitPrice: Decimal;
-    }>;
-    createdAt: Date;
-    updatedAt: Date;
-    paidAt: Date | null;
-  }): Order {
+  private mapToOrder(order: any): Order {
     return {
       id: order.id,
       waiterId: order.waiterId,
-      waiterName: order.waiter.name,
+      waiter: { name: order.waiter.name, nameAm: order.waiter.nameAm },
+      dailyOrderNumber: order.dailyOrderNumber,
+      tableNumber: order.tableNumber,
       status: order.status,
       paymentType: order.paymentType,
-      receiptUrl: order.receiptUrl,
+      receiptImage: order.receiptUrl,
       total: Number(order.total),
-      items: order.items.map((item) => ({
+      items: order.items.map((item: any) => ({
         id: item.id,
         menuItemId: item.menuItemId,
-        menuItemName: item.menuItem.name,
         quantity: item.quantity,
         unitPrice: Number(item.unitPrice),
+        menuItemName: item.menuItem.name,
+        menuItemNameAm: item.menuItem.nameAm,
+        menuItem: {
+          name: item.menuItem.name,
+          nameAm: item.menuItem.nameAm,
+          category: item.menuItem.category,
+          station: item.menuItem.station,
+        },
       })),
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,

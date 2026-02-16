@@ -18,7 +18,7 @@ export const getAllOrders = async (
 
     const filters: {
       waiterId?: string;
-      status?: "PENDING" | "PAID" | "CANCELLED";
+      status?: "PENDING" | "PENDING_VERIFICATION" | "PAID" | "CANCELLED";
     } = {};
 
     if (waiterId && typeof waiterId === "string") {
@@ -28,9 +28,9 @@ export const getAllOrders = async (
     if (
       status &&
       typeof status === "string" &&
-      ["PENDING", "PAID", "CANCELLED"].includes(status)
+      ["PENDING", "Pending Verification", "PENDING_VERIFICATION", "PAID", "CANCELLED"].includes(status)
     ) {
-      filters.status = status as "PENDING" | "PAID" | "CANCELLED";
+      filters.status = status as "PENDING" | "PENDING_VERIFICATION" | "PAID" | "CANCELLED";
     }
 
     const orders = await orderService.findAll(filters);
@@ -81,7 +81,7 @@ export const createOrder = async (
   next: NextFunction
 ) => {
   try {
-    const { waiterId, items } = req.body;
+    const { waiterId, items, tableNumber } = req.body;
 
     // Basic validation - detailed validation in service
     if (!waiterId || !items || !Array.isArray(items) || items.length === 0) {
@@ -92,7 +92,7 @@ export const createOrder = async (
       );
     }
 
-    const order = await orderService.create({ waiterId, items });
+    const order = await orderService.create({ waiterId, items, tableNumber });
 
     res.status(201).json({
       success: true,
@@ -172,7 +172,8 @@ export const confirmPayment = async (
 ) => {
   try {
     const { id } = req.params;
-    const { paymentType, receiptImage } = req.body;
+    const { paymentType } = req.body;
+    const file = req.file;
 
     if (!paymentType) {
       throw new AppError(
@@ -190,9 +191,18 @@ export const confirmPayment = async (
       );
     }
 
+    let receiptUrl: string | undefined;
+    if (file) {
+      // Construct URL path (relative to server root)
+      // We serve 'uploads' directory at /cdn
+      // file.path is absolute path, we need relative path
+      // file.filename is the filename
+      receiptUrl = `/cdn/receipts/${file.filename}`;
+    }
+
     const order = await orderService.confirmPayment(id, {
       paymentType,
-      receiptImage,
+      receiptImage: receiptUrl,
     });
 
     res.json({
@@ -216,17 +226,40 @@ export const uploadReceipt = async (
 ) => {
   try {
     const { id } = req.params;
-    const { receiptUrl } = req.body;
+    const file = req.file;
 
-    if (!receiptUrl) {
+    if (!file) {
       throw new AppError(
         400,
         ErrorCode.VALIDATION_REQUIRED_FIELD,
-        "Receipt URL is required"
+        "Receipt image file is required"
       );
     }
 
+    const receiptUrl = `/cdn/receipts/${file.filename}`;
     const order = await orderService.uploadReceipt(id, receiptUrl);
+
+    res.json({
+      success: true,
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Verify order (Admin)
+ * POST /api/orders/:id/verify
+ */
+export const verifyOrder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const order = await orderService.verifyOrder(id);
 
     res.json({
       success: true,

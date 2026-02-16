@@ -8,6 +8,7 @@ export interface Employee {
   id: string;
   email: string;
   name: string;
+  nameAm?: string | null;
   role: Role;
   salary: number | null;
   hireDate: Date;
@@ -49,6 +50,7 @@ export class EmployeeService {
         email: data.email,
         passwordHash,
         name: data.name,
+        nameAm: data.nameAm,
         role: data.role,
         salary: data.salary,
         hireDate: new Date(),
@@ -89,6 +91,7 @@ export class EmployeeService {
     const employee = await prisma.user.update({
       where: { id },
       data: {
+        ...(data.nameAm !== undefined && { nameAm: data.nameAm }),
         ...(data.name !== undefined && { name: data.name }),
         ...(data.salary !== undefined && { salary: data.salary }),
         ...(data.phone !== undefined && { phone: data.phone }),

@@ -1,14 +1,23 @@
 // Shared types and DTOs
 
 export type Role = "ADMIN" | "EMPLOYEE";
-export type OrderStatus = "PENDING" | "PAID" | "CANCELLED";
+export type OrderStatus =
+  | "PENDING"
+  | "PENDING_VERIFICATION"
+  | "PAID"
+  | "CANCELLED";
 export type PaymentType = "CASH" | "DIGITAL";
 
 // Employee DTOs
+export interface CheckDTO {
+  // ...
+}
+
 export interface CreateEmployeeDTO {
   email: string;
   password: string;
   name: string;
+  nameAm?: string;
   role: Role;
   salary?: number;
   phone?: string;
@@ -16,23 +25,40 @@ export interface CreateEmployeeDTO {
 
 export interface UpdateEmployeeDTO {
   name?: string;
+  nameAm?: string;
   salary?: number;
   phone?: string;
   isActive?: boolean;
 }
 
 // Menu DTOs
+export interface MenuItemStats {
+  daily: number;
+  weekly: number;
+  monthly: number;
+}
+
+export type Station = "BAR" | "KITCHEN";
+
 export interface CreateMenuItemDTO {
   name: string;
+  nameAm?: string;
   price: number;
   category: string;
+  categoryAm?: string;
+  station?: Station;
+  imageUrl?: string;
   ingredients: { ingredientId: string; quantityPerServing: number }[];
 }
 
 export interface UpdateMenuItemDTO {
   name?: string;
+  nameAm?: string;
   price?: number;
   category?: string;
+  categoryAm?: string;
+  station?: Station;
+  imageUrl?: string;
   ingredients?: { ingredientId: string; quantityPerServing: number }[];
   isActive?: boolean;
 }
@@ -40,6 +66,7 @@ export interface UpdateMenuItemDTO {
 // Ingredient DTOs
 export interface CreateIngredientDTO {
   name: string;
+  nameAm?: string;
   unit: string;
   currentStock: number;
   minThreshold: number;
@@ -105,6 +132,7 @@ export interface AuthResult {
   user: {
     id: string;
     email: string;
+    nameAm?: string;
     name: string;
     role: Role;
   };
@@ -113,4 +141,5 @@ export interface AuthResult {
 export interface WaiterProfile {
   id: string;
   name: string;
+  nameAm?: string | null;
 }

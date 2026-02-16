@@ -58,6 +58,60 @@ export const getMenuItemById = async (
 };
 
 /**
+ * Get menu item stats
+ * GET /api/menu/:id/stats
+ */
+export const getMenuItemStats = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const stats = await menuService.getStats(id);
+
+    res.json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get menu item stats for specific date
+ * GET /api/menu/:id/stats/date
+ */
+export const getMenuItemStatsForDate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { date } = req.query;
+
+    if (!date || typeof date !== "string") {
+      throw new AppError(
+        400,
+        ErrorCode.VALIDATION_REQUIRED_FIELD,
+        "Date is required"
+      );
+    }
+
+    const stats = await menuService.getStatsForDate(id, new Date(date));
+
+    res.json({
+      success: true,
+      data: { count: stats },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Get menu items with availability status
  * GET /api/menu/availability
  * Requirements: 7.1, 7.3, 7.4
@@ -90,7 +144,8 @@ export const createMenuItem = async (
   next: NextFunction
 ) => {
   try {
-    const { name, price, category, ingredients } = req.body;
+    const { name, nameAm, price, category, categoryAm, ingredients } = req.body;
+    const file = req.file;
 
     // Basic validation - detailed validation in service
     if (!name || price === undefined || !category || !ingredients) {
@@ -101,11 +156,33 @@ export const createMenuItem = async (
       );
     }
 
+    let imageUrl: string | undefined;
+    if (file) {
+      imageUrl = `/cdn/menu/${file.filename}`;
+    }
+
+    // Parse ingredients if it came as string (multipart/form-data)
+    let parsedIngredients = ingredients;
+    if (typeof ingredients === "string") {
+      try {
+        parsedIngredients = JSON.parse(ingredients);
+      } catch (e) {
+        throw new AppError(
+          400,
+          ErrorCode.VALIDATION_INVALID_FORMAT,
+          "Invalid ingredients format"
+        );
+      }
+    }
+
     const menuItem = await menuService.create({
       name,
-      price,
+      nameAm,
+      price: Number(price),
       category,
-      ingredients,
+      categoryAm,
+      ingredients: parsedIngredients,
+      imageUrl,
     });
 
     res.status(201).json({
@@ -129,14 +206,45 @@ export const updateMenuItem = async (
 ) => {
   try {
     const { id } = req.params;
-    const { name, price, category, ingredients, isActive } = req.body;
+    const {
+      name,
+      nameAm,
+      price,
+      category,
+      categoryAm,
+      ingredients,
+      isActive,
+    } = req.body;
+    const file = req.file;
+
+    let imageUrl: string | undefined;
+    if (file) {
+      imageUrl = `/cdn/menu/${file.filename}`;
+    }
+
+    // Parse ingredients if it came as string (multipart/form-data)
+    let parsedIngredients = ingredients;
+    if (typeof ingredients === "string") {
+      try {
+        parsedIngredients = JSON.parse(ingredients);
+      } catch (e) {
+        throw new AppError(
+          400,
+          ErrorCode.VALIDATION_INVALID_FORMAT,
+          "Invalid ingredients format"
+        );
+      }
+    }
 
     const menuItem = await menuService.update(id, {
       name,
-      price,
+      nameAm,
+      price: price ? Number(price) : undefined,
       category,
-      ingredients,
-      isActive,
+      categoryAm,
+      ingredients: parsedIngredients,
+      isActive: isActive === undefined ? undefined : isActive === "true",
+      imageUrl,
     });
 
     res.json({

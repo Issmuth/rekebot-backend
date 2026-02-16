@@ -246,14 +246,16 @@ export class AnalyticsService {
 
     for (let hour = 0; hour < 24; hour++) {
       const data = hourlyData.get(hour)!;
-      result.push({
-        hour,
-        orderCount: data.orderCount,
-        averageRevenue:
-          data.orderCount > 0
-            ? Math.round((data.totalValue / data.orderCount) * 100) / 100
-            : 0,
-      });
+      if (data.orderCount > 0) {
+        result.push({
+          hour,
+          orderCount: data.orderCount,
+          averageRevenue:
+            data.orderCount > 0
+              ? Math.round((data.totalValue / data.orderCount) * 100) / 100
+              : 0,
+        });
+      }
     }
 
     // Sort by order count descending

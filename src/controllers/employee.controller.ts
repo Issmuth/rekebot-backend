@@ -65,7 +65,7 @@ export const createEmployee = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password, name, role, salary, phone } = req.body;
+    const { email, password, name, nameAm, role, salary, phone } = req.body;
 
     // Validate required fields
     if (!email || !password || !name || !role) {
@@ -89,6 +89,7 @@ export const createEmployee = async (
       email,
       password,
       name,
+      nameAm,
       role,
       salary,
       phone,
@@ -115,10 +116,11 @@ export const updateEmployee = async (
 ) => {
   try {
     const { id } = req.params;
-    const { name, salary, phone, isActive } = req.body;
+    const { name, nameAm, salary, phone, isActive } = req.body;
 
     const employee = await employeeService.update(id, {
       name,
+      nameAm,
       salary,
       phone,
       isActive,
