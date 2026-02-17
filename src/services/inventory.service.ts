@@ -193,7 +193,7 @@ export class InventoryService {
     });
 
     // Build a map of ingredient deductions
-    const deductions = new Map<string, { amount: number; name: string }>();
+    const deductions = new Map<string, { amount: Decimal; name: string }>();
 
     for (const orderItem of items) {
       const menuItem = menuItems.find((mi) => mi.id === orderItem.menuItemId);
@@ -205,12 +205,13 @@ export class InventoryService {
       }
 
       for (const mapping of menuItem.ingredients) {
-        const deductionAmount =
-          Number(mapping.quantityPerServing) * orderItem.quantity;
+        const deductionAmount = new Decimal(mapping.quantityPerServing).mul(
+          orderItem.quantity
+        );
         const existing = deductions.get(mapping.ingredientId);
 
         if (existing) {
-          existing.amount += deductionAmount;
+          existing.amount = existing.amount.add(deductionAmount);
         } else {
           deductions.set(mapping.ingredientId, {
             amount: deductionAmount,
@@ -234,25 +235,14 @@ export class InventoryService {
           );
         }
 
-        const newStock = Number(ingredient.currentStock) - amount;
-
-        if (newStock < 0) {
-          throw businessError(
-            ErrorCode.BUSINESS_INSUFFICIENT_STOCK,
-            `Insufficient stock for ${name}`,
-            {
-              ingredientId,
-              currentStock: Number(ingredient.currentStock),
-              required: amount,
-            }
-          );
-        }
+        const currentStock = new Decimal(ingredient.currentStock);
+        const newStock = currentStock.sub(amount);
 
         // Create adjustment record
         await tx.stockAdjustment.create({
           data: {
             ingredientId,
-            quantity: -amount,
+            quantity: amount.negated(),
             reason: "Order fulfillment",
           },
         });
