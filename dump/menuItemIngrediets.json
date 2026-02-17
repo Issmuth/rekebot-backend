@@ -1,0 +1,355 @@
+[
+  {
+    "menuItem": "Tuna Salad",
+    "ingredients": [
+      { "name": "Salad", "quantity": "1" },
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" },
+      { "name": "Cucumber", "quantity": "1" },
+      { "name": "Avocado", "quantity": "1" },
+      { "name": "Tuna", "quantity": "1" },
+      { "name": "Bread", "quantity": "3" }
+    ]
+  },
+  {
+    "menuItem": "Mixed Salad",
+    "ingredients": [
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" },
+      { "name": "Salad", "quantity": "1" },
+      { "name": "Cucumber", "quantity": "1" },
+      { "name": "Avocado", "quantity": "1" },
+      { "name": "Carrot", "quantity": "1" },
+      { "name": "Bread", "quantity": "3" }
+    ]
+  },
+  {
+    "menuItem": "Macaroni Salad",
+    "ingredients": [
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" },
+      { "name": "Cucumber", "quantity": "1" },
+      { "name": "Macaroni", "quantity": "1" },
+      { "name": "Parsley", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Fruit Punch",
+    "ingredients": [
+      { "name": "Mixed Fruit", "quantity": "Any" }
+    ]
+  },
+  {
+    "menuItem": "Tuna Sandwich",
+    "ingredients": [
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Tuna", "quantity": "1" },
+      { "name": "Bread", "quantity": "4" },
+      { "name": "Potato", "quantity": "1.5" }
+    ]
+  },
+  {
+    "menuItem": "Chicken Wrap",
+    "ingredients": [
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Potato", "quantity": "1" },
+      { "name": "Chicken", "quantity": "100g" },
+      { "name": "Flour", "quantity": "1" },
+      { "name": "Mayonnaise", "quantity": "1" },
+      { "name": "Ketchup", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Beef Wrap",
+    "ingredients": [
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Beef / Meat", "quantity": "100g" },
+      { "name": "Flour", "quantity": "1" },
+      { "name": "Potato", "quantity": "1" },
+      { "name": "Mayonnaise", "quantity": "1" },
+      { "name": "Ketchup", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Falafel Wrap",
+    "ingredients": [
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Flour", "quantity": "1" },
+      { "name": "Falafel", "quantity": "100g" },
+      { "name": "Potato", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Club Sandwich",
+    "ingredients": [
+      { "name": "Chicken", "quantity": "100g" },
+      { "name": "Bread", "quantity": "4" },
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Egg", "quantity": "1" },
+      { "name": "Mayonnaise", "quantity": "1" },
+      { "name": "Potato", "quantity": "1.5" }
+    ]
+  },
+  {
+    "menuItem": "Egg Sandwich",
+    "ingredients": [
+      { "name": "Bread", "quantity": "4" },
+      { "name": "Egg", "quantity": "3" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" },
+      { "name": "Potato", "quantity": "1.5" }
+    ]
+  },
+  {
+    "menuItem": "Vegetable Rice",
+    "ingredients": [
+      { "name": "Carrot", "quantity": "1" },
+      { "name": "Zucchini", "quantity": "1" },
+      { "name": "Broccoli", "quantity": "1" },
+      { "name": "Cabbage", "quantity": "1" },
+      { "name": "Rice", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Chicken Curry",
+    "ingredients": [
+      { "name": "Rice", "quantity": "1" },
+      { "name": "Flour", "quantity": "1" },
+      { "name": "Chicken", "quantity": "150g" },
+      { "name": "Sauce", "quantity": "2 ladles" },
+      { "name": "Curry Powder", "quantity": "15g" }
+    ]
+  },
+  {
+    "menuItem": "Potato Curry",
+    "ingredients": [
+      { "name": "Potato", "quantity": "1" },
+      { "name": "Sauce", "quantity": "1" },
+      { "name": "Flour", "quantity": "1" },
+      { "name": "Rice", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Chicken Fried Rice",
+    "ingredients": [
+      { "name": "Carrot", "quantity": "1" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Egg", "quantity": "2" },
+      { "name": "Chicken", "quantity": "70g" },
+      { "name": "Rice", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Beef Fried Rice",
+    "ingredients": [
+      { "name": "Carrot", "quantity": "1" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Egg", "quantity": "2" },
+      { "name": "Beef / Meat", "quantity": "70g" },
+      { "name": "Rice", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Croissant Sandwich",
+    "ingredients": [
+      { "name": "Croissant", "quantity": "1" },
+      { "name": "Egg", "quantity": "2" },
+      { "name": "Cheese", "quantity": "40g" }
+    ]
+  },
+  {
+    "menuItem": "Scrambled Egg",
+    "ingredients": [
+      { "name": "Bread", "quantity": "4" },
+      { "name": "Egg", "quantity": "4" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Pancake",
+    "ingredients": [
+      { "name": "Flour", "quantity": "1" },
+      { "name": "Sugar", "quantity": "1" },
+      { "name": "Vanilla", "quantity": "1" },
+      { "name": "Baking Powder", "quantity": "1" },
+      { "name": "Egg", "quantity": "1" },
+      { "name": "Syrup", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Waffle",
+    "ingredients": []
+  },
+  {
+    "menuItem": "French Toast",
+    "ingredients": [
+      { "name": "Egg", "quantity": "3" },
+      { "name": "Bread", "quantity": "3" },
+      { "name": "Potato", "quantity": "1" },
+      { "name": "Strawberry", "quantity": "2" }
+    ]
+  },
+  {
+    "menuItem": "Avocado Sandwich",
+    "ingredients": [
+      { "name": "Avocado", "quantity": "1" },
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" },
+      { "name": "Bread", "quantity": "4" }
+    ]
+  },
+  {
+    "menuItem": "Chechebsa",
+    "ingredients": [
+      { "name": "Flour", "quantity": "1" },
+      { "name": "Shiro (Sheno)", "quantity": "1 tbsp" },
+      { "name": "Ketchup", "quantity": "1" },
+      { "name": "Egg", "quantity": "1" },
+      { "name": "Berbere", "quantity": "1 tsp" }
+    ]
+  },
+  {
+    "menuItem": "Fasting Chechebsa",
+    "ingredients": [
+      { "name": "Flour", "quantity": "1" },
+      { "name": "Shiro (Sheno)", "quantity": "1 tbsp" },
+      { "name": "Berbere", "quantity": "1 tsp" },
+      { "name": "Ketchup", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Ful",
+    "ingredients": [
+      { "name": "Ful (Fava Beans)", "quantity": "0.5" },
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" },
+      { "name": "Berbere", "quantity": "1" },
+      { "name": "Shiro (Sheno)", "quantity": "1 tsp" },
+      { "name": "Egg", "quantity": "1 (or Avocado)" },
+      { "name": "Bread", "quantity": "4" }
+    ]
+  },
+  {
+    "menuItem": "Omelet",
+    "ingredients": [
+      { "name": "Egg", "quantity": "3" },
+      { "name": "Bread", "quantity": "2" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Chicken Omelet",
+    "ingredients": [
+      { "name": "Egg", "quantity": "3" },
+      { "name": "Bread", "quantity": "2" },
+      { "name": "Chicken", "quantity": "50g" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Cheese Omelet",
+    "ingredients": [
+      { "name": "Cheese", "quantity": "20g" },
+      { "name": "Egg", "quantity": "3" },
+      { "name": "Bread", "quantity": "2" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Chicken Salad",
+    "ingredients": [
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" },
+      { "name": "Cucumber", "quantity": "1" },
+      { "name": "Egg", "quantity": "1" },
+      { "name": "Chicken", "quantity": "100g" },
+      { "name": "Strawberry", "quantity": "2" },
+      { "name": "Avocado", "quantity": "1" },
+      { "name": "Bread", "quantity": "3" }
+    ]
+  },
+  {
+    "menuItem": "Red Meat Combo",
+    "ingredients": [
+      { "name": "Chicken", "quantity": "100g" },
+      { "name": "Beef / Meat", "quantity": "150g" },
+      { "name": "Injera", "quantity": "2" },
+      { "name": "Sauce", "quantity": "1" },
+      { "name": "Gomen (Collard Greens)", "quantity": "160g" },
+      { "name": "Ayb (Cottage Cheese)", "quantity": "1" },
+      { "name": "Berbere", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Shiro",
+    "ingredients": [
+      { "name": "Shiro (Sheno)", "quantity": "1" },
+      { "name": "Injera", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Shiro w Veg",
+    "ingredients": [
+      { "name": "Shiro (Sheno)", "quantity": "1" },
+      { "name": "Injera", "quantity": "1" },
+      { "name": "Shiro (Sheno)", "quantity": "1 tbsp" },
+      { "name": "Carrot", "quantity": "1" },
+      { "name": "Zucchini", "quantity": "1" },
+      { "name": "Cabbage", "quantity": "1" },
+      { "name": "Broccoli", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Shiro w Salad",
+    "ingredients": [
+      { "name": "Onion", "quantity": "1" },
+      { "name": "Tomato", "quantity": "1" },
+      { "name": "Pepper", "quantity": "1" },
+      { "name": "Salad", "quantity": "1" },
+      { "name": "Cucumber", "quantity": "1" },
+      { "name": "Shiro (Sheno)", "quantity": "1" },
+      { "name": "Injera", "quantity": "1" },
+      { "name": "Shiro (Sheno)", "quantity": "1 tbsp" }
+    ]
+  },
+  {
+    "menuItem": "Lentil Sambusa",
+    "ingredients": [
+      { "name": "Lentil", "quantity": "1" },
+      { "name": "Flour", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Beef Sambusa",
+    "ingredients": [
+      { "name": "Beef / Meat", "quantity": "1" },
+      { "name": "Flour", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Special Breakfast Combo",
+    "ingredients": [
+      { "name": "Chicken", "quantity": "70g" },
+      { "name": "Cheese", "quantity": "20g" },
+      { "name": "Avocado", "quantity": "1" },
+      { "name": "Honey", "quantity": "30g" },
+      { "name": "Bread", "quantity": "3" },
+      { "name": "Pita", "quantity": "1" }
+    ]
+  }
+]

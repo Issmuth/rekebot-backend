@@ -48,6 +48,7 @@ export interface CreateOrderDTO {
 
 export interface UpdateOrderDTO {
   items: OrderItemDTO[];
+  tableNumber?: string | null;
 }
 
 export class OrderService {
@@ -170,9 +171,6 @@ export class OrderService {
       throw validationError("At least one item is required");
     }
 
-    // Validate stock availability for new items
-    await this.validateStockAvailability(data.items);
-
     // Get menu items to calculate prices
     const menuItemIds = data.items.map((item) => item.menuItemId);
     const menuItems = await prisma.menuItem.findMany({
@@ -205,6 +203,7 @@ export class OrderService {
         where: { id },
         data: {
           total,
+          ...(data.tableNumber !== undefined ? { tableNumber: data.tableNumber } : {}),
           items: {
             create: data.items.map((item) => ({
               menuItemId: item.menuItemId,

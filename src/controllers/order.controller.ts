@@ -115,7 +115,7 @@ export const updateOrder = async (
 ) => {
   try {
     const { id } = req.params;
-    const { items } = req.body;
+    const { items, tableNumber } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       throw new AppError(
@@ -125,7 +125,7 @@ export const updateOrder = async (
       );
     }
 
-    const order = await orderService.update(id, { items });
+    const order = await orderService.update(id, { items, tableNumber });
 
     res.json({
       success: true,

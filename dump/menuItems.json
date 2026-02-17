@@ -1,0 +1,282 @@
+[
+  {
+    "name": "Tuna Salad",
+    "nameAm": "ቱና ሳላድ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Mixed Salad",
+    "nameAm": "ሚክስድ ሳላድ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Macaroni Salad",
+    "nameAm": "መኮሮኒ ሳላድ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Fruit Punch",
+    "nameAm": "ፍራፍሬ ጁስ",
+    "station": "BAR",
+    "category": "Drinks",
+    "categoryAm": "መጠጥ",
+    "price": 0
+  },
+  {
+    "name": "Tuna Sandwich",
+    "nameAm": "ቱና ሳንድዊች",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Chicken Wrap",
+    "nameAm": "ቺከን ራፕ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Beef Wrap",
+    "nameAm": "ቢፍ ራፕ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Falafel Wrap",
+    "nameAm": "ፋላፌል ራፕ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Club Sandwich",
+    "nameAm": "ክለብ ሳንድዊች",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Egg Sandwich",
+    "nameAm": "እንቁላል ሳንድዊች",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Vegetable Rice",
+    "nameAm": "አትክልት በሩዝ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Chicken Curry",
+    "nameAm": "ቺከን ካሪ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Potato Curry",
+    "nameAm": "ድንች ወጥ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Chicken Fried Rice",
+    "nameAm": "ቺከን ፍራይድ ራይስ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Beef Fried Rice",
+    "nameAm": "ቢፍ ፍራይድ ራይስ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Croissant Sandwich",
+    "nameAm": "ክሮዋሳን ሳንድዊች",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Scrambled Egg",
+    "nameAm": "የተምታታ እንቁላል",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Pancake",
+    "nameAm": "ፓንኬክ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Waffle",
+    "nameAm": "ዋፍል",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "French Toast",
+    "nameAm": "ፍሬንች ቶስት",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Avocado Sandwich",
+    "nameAm": "አቮካዶ ሳንድዊች",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Chechebsa",
+    "nameAm": "ጨጨብሳ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Fasting Chechebsa",
+    "nameAm": "የጾም ጨጨብሳ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Ful",
+    "nameAm": "ፉል",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Omelet",
+    "nameAm": "ኦምሌት",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Chicken Omelet",
+    "nameAm": "ቺከን ኦምሌት",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Cheese Omelet",
+    "nameAm": "ቺዝ ኦምሌት",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Chicken Salad",
+    "nameAm": "ቺከን ሳላድ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Red Meat Combo",
+    "nameAm": "ቀይ ስጋ ኮምቦ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Shiro",
+    "nameAm": "ሽሮ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Shiro w Veg",
+    "nameAm": "ሽሮ በአትክልት",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Shiro w Salad",
+    "nameAm": "ሽሮ በሳላድ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Lentil Sambusa",
+    "nameAm": "የምስር ሳምቡሳ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Beef Sambusa",
+    "nameAm": "የስጋ ሳምቡሳ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  },
+  {
+    "name": "Special Breakfast Combo",
+    "nameAm": "ስፔሻል ቁርስ",
+    "station": "KITCHEN",
+    "category": "Food",
+    "categoryAm": "ምግብ",
+    "price": 0
+  }
+]
