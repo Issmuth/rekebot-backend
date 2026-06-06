@@ -1,7 +1,10 @@
 import { Response, NextFunction, Request } from "express";
 import { orderService } from "../services/order.service";
+import { authService } from "../services/auth.service";
 import { AppError } from "../middleware/errorHandler";
 import { ErrorCode } from "../utils/errors";
+import fs from "fs";
+import path from "path";
 
 /**
  * Get all orders
@@ -14,11 +17,15 @@ export const getAllOrders = async (
   next: NextFunction
 ) => {
   try {
-    const { waiterId, status } = req.query;
+    const { waiterId, status, paymentType, startDate, endDate, tipped } = req.query;
 
     const filters: {
       waiterId?: string;
       status?: "PENDING" | "PENDING_VERIFICATION" | "PAID" | "CANCELLED";
+      paymentType?: "CASH" | "DIGITAL";
+      startDate?: Date;
+      endDate?: Date;
+      tipped?: boolean;
     } = {};
 
     if (waiterId && typeof waiterId === "string") {
@@ -31,6 +38,49 @@ export const getAllOrders = async (
       ["PENDING", "Pending Verification", "PENDING_VERIFICATION", "PAID", "CANCELLED"].includes(status)
     ) {
       filters.status = status as "PENDING" | "PENDING_VERIFICATION" | "PAID" | "CANCELLED";
+    }
+
+    if (
+      paymentType &&
+      typeof paymentType === "string" &&
+      ["CASH", "DIGITAL"].includes(paymentType)
+    ) {
+      filters.paymentType = paymentType as "CASH" | "DIGITAL";
+    }
+
+    if (startDate && typeof startDate === "string") {
+      const parsedStartDate = new Date(startDate);
+      if (isNaN(parsedStartDate.getTime())) {
+        throw new AppError(
+          400,
+          ErrorCode.VALIDATION_INVALID_FORMAT,
+          "Invalid startDate format"
+        );
+      }
+      filters.startDate = parsedStartDate;
+    }
+
+    if (endDate && typeof endDate === "string") {
+      const parsedEndDate = new Date(endDate);
+      if (isNaN(parsedEndDate.getTime())) {
+        throw new AppError(
+          400,
+          ErrorCode.VALIDATION_INVALID_FORMAT,
+          "Invalid endDate format"
+        );
+      }
+      filters.endDate = parsedEndDate;
+    }
+
+    if (tipped && typeof tipped === "string") {
+      if (!["true", "false"].includes(tipped)) {
+        throw new AppError(
+          400,
+          ErrorCode.VALIDATION_INVALID_FORMAT,
+          "Invalid tipped filter format"
+        );
+      }
+      filters.tipped = tipped === "true";
     }
 
     const orders = await orderService.findAll(filters);
@@ -71,6 +121,65 @@ export const getOrderById = async (
 };
 
 /**
+ * Get receipt image for an order (authenticated)
+ * GET /api/orders/:id/receipt-image
+ */
+export const getReceiptImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const order = await orderService.findById(id);
+
+    if (!order) {
+      throw new AppError(404, ErrorCode.NOT_FOUND_ORDER, "Order not found");
+    }
+
+    if (!order.receiptImage) {
+      throw new AppError(404, ErrorCode.NOT_FOUND_ORDER, "Receipt image not found");
+    }
+
+    const originalValue = order.receiptImage.replace(/\\/g, "/").trim();
+
+    let receiptPath = originalValue;
+    if (originalValue.startsWith("http://") || originalValue.startsWith("https://")) {
+      try {
+        receiptPath = new URL(originalValue).pathname;
+      } catch {
+        receiptPath = originalValue;
+      }
+    }
+
+    let relativePath = receiptPath.startsWith("/") ? receiptPath : `/${receiptPath}`;
+    relativePath = relativePath.replace(/^\/api\//, "/");
+
+    if (relativePath.startsWith("/cdn/")) {
+      relativePath = relativePath.replace(/^\/cdn\//, "/");
+    } else if (relativePath.startsWith("/uploads/")) {
+      relativePath = relativePath.replace(/^\/uploads\//, "/");
+    }
+
+    const normalizedRelative = relativePath.replace(/^\/+/, "");
+    const uploadsRoot = path.resolve(process.cwd(), "uploads");
+    const absolutePath = path.resolve(uploadsRoot, normalizedRelative);
+
+    if (!absolutePath.startsWith(uploadsRoot + path.sep) && absolutePath !== uploadsRoot) {
+      throw new AppError(400, ErrorCode.VALIDATION_INVALID_FORMAT, "Invalid receipt path");
+    }
+
+    if (!fs.existsSync(absolutePath)) {
+      throw new AppError(404, ErrorCode.NOT_FOUND_ORDER, "Receipt image file not found");
+    }
+
+    res.sendFile(absolutePath);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Create a new order
  * POST /api/orders
  * Requirements: 3.1, 3.2, 3.3
@@ -81,18 +190,24 @@ export const createOrder = async (
   next: NextFunction
 ) => {
   try {
-    const { waiterId, items, tableNumber } = req.body;
+    const { waiterPin, items, tableNumber } = req.body;
 
     // Basic validation - detailed validation in service
-    if (!waiterId || !items || !Array.isArray(items) || items.length === 0) {
+    if (!waiterPin || !items || !Array.isArray(items) || items.length === 0) {
       throw new AppError(
         400,
         ErrorCode.VALIDATION_REQUIRED_FIELD,
-        "Waiter ID and at least one item are required"
+        "Waiter PIN and at least one item are required"
       );
     }
 
-    const order = await orderService.create({ waiterId, items, tableNumber });
+    const waiter = await authService.authorizeWaiterByPin(waiterPin);
+
+    const order = await orderService.create({
+      waiterId: waiter.id,
+      items,
+      tableNumber,
+    });
 
     res.status(201).json({
       success: true,
@@ -172,7 +287,7 @@ export const confirmPayment = async (
 ) => {
   try {
     const { id } = req.params;
-    const { paymentType } = req.body;
+    const { paymentType, tipAmount } = req.body;
     const file = req.file;
 
     if (!paymentType) {
@@ -203,6 +318,7 @@ export const confirmPayment = async (
     const order = await orderService.confirmPayment(id, {
       paymentType,
       receiptImage: receiptUrl,
+      tipAmount: tipAmount && !isNaN(Number(tipAmount)) ? Number(tipAmount) : undefined,
     });
 
     res.json({

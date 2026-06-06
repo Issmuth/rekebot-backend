@@ -1,4 +1,7 @@
-import prisma from "../lib/prisma";
+import { and, desc, eq, gt, gte, inArray, lt, lte } from "drizzle-orm";
+import { menuItems, orderItems, orders, users } from "../db/schema";
+import { db } from "../lib/drizzle";
+import { randomUUID } from "crypto";
 import { OrderItemDTO, PaymentType, ConfirmPaymentDTO } from "../types";
 import {
   ErrorCode,
@@ -7,7 +10,6 @@ import {
   businessError,
 } from "../utils/errors";
 import { inventoryService } from "./inventory.service";
-import { Decimal } from "@prisma/client/runtime/library";
 
 export interface Order {
   id: string;
@@ -19,6 +21,7 @@ export interface Order {
   paymentType: PaymentType | null;
   receiptImage: string | null;
   total: number;
+  tipAmount: number | null;
   items: OrderItemDetail[];
   createdAt: Date;
   updatedAt: Date;
@@ -61,9 +64,11 @@ export class OrderService {
     this.validateOrderData(data);
 
     // Verify waiter exists and is active
-    const waiter = await prisma.user.findUnique({
-      where: { id: data.waiterId },
-    });
+    const [waiter] = await db
+      .select({ id: users.id, isActive: users.isActive })
+      .from(users)
+      .where(eq(users.id, data.waiterId))
+      .limit(1);
 
     if (!waiter) {
       throw notFoundError(ErrorCode.NOT_FOUND_USER, "Waiter not found");
@@ -78,12 +83,13 @@ export class OrderService {
 
     // Get menu items to calculate prices
     const menuItemIds = data.items.map((item) => item.menuItemId);
-    const menuItems = await prisma.menuItem.findMany({
-      where: { id: { in: menuItemIds }, isActive: true },
-    });
+    const menuItemsRows = await db
+      .select({ id: menuItems.id, price: menuItems.price })
+      .from(menuItems)
+      .where(and(inArray(menuItems.id, menuItemIds), eq(menuItems.isActive, true)));
 
     // Verify all menu items exist and are active
-    const menuItemMap = new Map(menuItems.map((mi) => [mi.id, mi]));
+    const menuItemMap = new Map(menuItemsRows.map((mi) => [mi.id, mi]));
     for (const item of data.items) {
       if (!menuItemMap.has(item.menuItemId)) {
         throw notFoundError(
@@ -102,46 +108,50 @@ export class OrderService {
     const endOfToday = new Date(today);
     endOfToday.setDate(endOfToday.getDate() + 1);
 
-    const lastOrder = await prisma.order.findFirst({
-      where: {
-        createdAt: {
-          gte: today,
-          lt: endOfToday,
-        },
-      },
-      orderBy: {
-        dailyOrderNumber: "desc",
-      },
-    });
+    const [lastOrder] = await db
+      .select({ dailyOrderNumber: orders.dailyOrderNumber })
+      .from(orders)
+      .where(and(gte(orders.createdAt, today), lt(orders.createdAt, endOfToday)))
+      .orderBy(desc(orders.dailyOrderNumber))
+      .limit(1);
 
     const dailyOrderNumber = (lastOrder?.dailyOrderNumber || 0) + 1;
 
-    // Create order with items
-    const order = await prisma.order.create({
-      data: {
-        dailyOrderNumber,
-        waiterId: data.waiterId,
-        tableNumber: data.tableNumber,
-        total,
-        items: {
-          create: data.items.map((item) => ({
-            menuItemId: item.menuItemId,
-            quantity: item.quantity,
-            unitPrice: menuItemMap.get(item.menuItemId)!.price,
-          })),
-        },
-      },
-      include: {
-        waiter: { select: { name: true, nameAm: true } },
-        items: {
-          include: {
-            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
-          },
-        },
-      },
+    const [createdOrder] = await db.transaction(async (tx) => {
+      const now = new Date();
+      const inserted = await tx
+        .insert(orders)
+        .values({
+          id: randomUUID(),
+          dailyOrderNumber,
+          waiterId: data.waiterId,
+          tableNumber: data.tableNumber,
+          status: "PENDING",
+          total: String(total),
+          createdAt: now,
+          updatedAt: now,
+        })
+        .returning({ id: orders.id });
+
+      await tx.insert(orderItems).values(
+        data.items.map((item) => ({
+          id: randomUUID(),
+          orderId: inserted[0].id,
+          menuItemId: item.menuItemId,
+          quantity: item.quantity,
+          unitPrice: String(menuItemMap.get(item.menuItemId)!.price),
+        }))
+      );
+
+      return inserted;
     });
 
-    return this.mapToOrder(order);
+    const order = await this.findById(createdOrder.id);
+    if (!order) {
+      throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
+    }
+
+    return order;
   }
 
   /**
@@ -150,9 +160,11 @@ export class OrderService {
    */
   async update(id: string, data: UpdateOrderDTO): Promise<Order> {
     // Check if order exists
-    const existing = await prisma.order.findUnique({
-      where: { id },
-    });
+    const [existing] = await db
+      .select({ id: orders.id, status: orders.status })
+      .from(orders)
+      .where(eq(orders.id, id))
+      .limit(1);
 
     if (!existing) {
       throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
@@ -173,12 +185,13 @@ export class OrderService {
 
     // Get menu items to calculate prices
     const menuItemIds = data.items.map((item) => item.menuItemId);
-    const menuItems = await prisma.menuItem.findMany({
-      where: { id: { in: menuItemIds }, isActive: true },
-    });
+    const menuItemsRows = await db
+      .select({ id: menuItems.id, price: menuItems.price })
+      .from(menuItems)
+      .where(and(inArray(menuItems.id, menuItemIds), eq(menuItems.isActive, true)));
 
     // Verify all menu items exist and are active
-    const menuItemMap = new Map(menuItems.map((mi) => [mi.id, mi]));
+    const menuItemMap = new Map(menuItemsRows.map((mi) => [mi.id, mi]));
     for (const item of data.items) {
       if (!menuItemMap.has(item.menuItemId)) {
         throw notFoundError(
@@ -191,39 +204,35 @@ export class OrderService {
     // Calculate new total
     const total = this.calculateTotal(data.items, menuItemMap);
 
-    // Update order with new items
-    const order = await prisma.$transaction(async (tx) => {
-      // Delete existing items
-      await tx.orderItem.deleteMany({
-        where: { orderId: id },
-      });
+    await db.transaction(async (tx) => {
+      await tx.delete(orderItems).where(eq(orderItems.orderId, id));
 
-      // Update order with new items
-      return tx.order.update({
-        where: { id },
-        data: {
-          total,
+      await tx
+        .update(orders)
+        .set({
+          total: String(total),
           ...(data.tableNumber !== undefined ? { tableNumber: data.tableNumber } : {}),
-          items: {
-            create: data.items.map((item) => ({
-              menuItemId: item.menuItemId,
-              quantity: item.quantity,
-              unitPrice: menuItemMap.get(item.menuItemId)!.price,
-            })),
-          },
-        },
-        include: {
-          waiter: { select: { name: true, nameAm: true } },
-          items: {
-            include: {
-              menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
-            },
-          },
-        },
-      });
+          updatedAt: new Date(),
+        })
+        .where(eq(orders.id, id));
+
+      await tx.insert(orderItems).values(
+        data.items.map((item) => ({
+          id: randomUUID(),
+          orderId: id,
+          menuItemId: item.menuItemId,
+          quantity: item.quantity,
+          unitPrice: String(menuItemMap.get(item.menuItemId)!.price),
+        }))
+      );
     });
 
-    return this.mapToOrder(order);
+    const order = await this.findById(id);
+    if (!order) {
+      throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
+    }
+
+    return order;
   }
 
   /**
@@ -232,27 +241,34 @@ export class OrderService {
    */
   async cancel(id: string): Promise<void> {
     // Check if order exists
-    const existing = await prisma.order.findUnique({
-      where: { id },
-    });
+    const existing = await this.findById(id);
 
     if (!existing) {
       throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
     }
 
     // Check if order can be cancelled
-    if (existing.status !== "PENDING") {
+    if (existing.status === "PAID" || existing.status === "CANCELLED") {
       throw businessError(
         ErrorCode.BUSINESS_ORDER_ALREADY_PAID,
-        "Cannot cancel order that is not pending"
+        "Cannot cancel order that is already paid or cancelled"
       );
     }
 
+    if (existing.status === "PENDING_VERIFICATION") {
+      const items: OrderItemDTO[] = existing.items.map((item) => ({
+        menuItemId: item.menuItemId,
+        quantity: item.quantity,
+      }));
+
+      await inventoryService.restoreStock(items);
+    }
+
     // Update order status to cancelled
-    await prisma.order.update({
-      where: { id },
-      data: { status: "CANCELLED" },
-    });
+    await db
+      .update(orders)
+      .set({ status: "CANCELLED", updatedAt: new Date() })
+      .where(eq(orders.id, id));
   }
 
   /**
@@ -261,12 +277,7 @@ export class OrderService {
    */
   async confirmPayment(id: string, data: ConfirmPaymentDTO): Promise<Order> {
     // Check if order exists
-    const existing = await prisma.order.findUnique({
-      where: { id },
-      include: {
-        items: true,
-      },
-    });
+    const existing = await this.findById(id);
 
     if (!existing) {
       throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
@@ -294,38 +305,37 @@ export class OrderService {
     }
 
     // Prepare order items for stock deduction
-    const orderItems: OrderItemDTO[] = existing.items.map((item) => ({
+    const currentItems: OrderItemDTO[] = existing.items.map((item) => ({
       menuItemId: item.menuItemId,
       quantity: item.quantity,
     }));
 
     // Deduct stock (this validates availability too)
-    await inventoryService.deductStock(orderItems);
+    await inventoryService.deductStock(currentItems);
 
     const newStatus =
       data.paymentType === "DIGITAL" ? "PENDING_VERIFICATION" : "PAID";
     const paidAt = data.paymentType === "DIGITAL" ? null : new Date();
 
     // Update order status
-    const order = await prisma.order.update({
-      where: { id },
-      data: {
+    await db
+      .update(orders)
+      .set({
         status: newStatus,
         paymentType: data.paymentType,
         receiptUrl: data.receiptImage || null,
-        paidAt: paidAt,
-      },
-      include: {
-        waiter: { select: { name: true, nameAm: true } },
-        items: {
-          include: {
-            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
-          },
-        },
-      },
-    });
+        tipAmount: data.tipAmount ? data.tipAmount.toString() : null,
+        updatedAt: new Date(),
+        paidAt,
+      })
+      .where(eq(orders.id, id));
 
-    return this.mapToOrder(order);
+    const order = await this.findById(id);
+    if (!order) {
+      throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
+    }
+
+    return order;
   }
 
   /**
@@ -334,29 +344,28 @@ export class OrderService {
    */
   async uploadReceipt(orderId: string, receiptUrl: string): Promise<Order> {
     // Check if order exists
-    const existing = await prisma.order.findUnique({
-      where: { id: orderId },
-    });
+    const [existing] = await db
+      .select({ id: orders.id })
+      .from(orders)
+      .where(eq(orders.id, orderId))
+      .limit(1);
 
     if (!existing) {
       throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
     }
 
     // Update receipt URL
-    const order = await prisma.order.update({
-      where: { id: orderId },
-      data: { receiptUrl },
-      include: {
-        waiter: { select: { name: true, nameAm: true } },
-        items: {
-          include: {
-            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
-          },
-        },
-      },
-    });
+    await db
+      .update(orders)
+      .set({ receiptUrl, updatedAt: new Date() })
+      .where(eq(orders.id, orderId));
 
-    return this.mapToOrder(order);
+    const order = await this.findById(orderId);
+    if (!order) {
+      throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
+    }
+
+    return order;
   }
 
   /**
@@ -366,54 +375,97 @@ export class OrderService {
   async findAll(filters?: {
     waiterId?: string;
     status?: "PENDING" | "PENDING_VERIFICATION" | "PAID" | "CANCELLED";
+    paymentType?: "CASH" | "DIGITAL";
+    startDate?: Date;
+    endDate?: Date;
+    tipped?: boolean;
   }): Promise<Order[]> {
-    const where: Record<string, unknown> = {};
+    const conditions = [];
 
     if (filters?.waiterId) {
-      where.waiterId = filters.waiterId;
+      conditions.push(eq(orders.waiterId, filters.waiterId));
     }
 
     if (filters?.status) {
-      where.status = filters.status;
+      conditions.push(eq(orders.status, filters.status));
     }
 
-    const orders = await prisma.order.findMany({
-      where,
-      include: {
-        waiter: { select: { name: true, nameAm: true } },
-        items: {
-          include: {
-            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    if (filters?.paymentType) {
+      conditions.push(eq(orders.paymentType, filters.paymentType));
+    }
 
-    return orders.map(this.mapToOrder);
+    if (filters?.startDate) {
+      conditions.push(gte(orders.createdAt, filters.startDate));
+    }
+
+    if (filters?.endDate) {
+      conditions.push(lte(orders.createdAt, filters.endDate));
+    }
+
+    if (filters?.tipped) {
+      conditions.push(gt(orders.tipAmount, "0"));
+    }
+
+    const whereClause =
+      conditions.length === 0
+        ? undefined
+        : conditions.length === 1
+        ? conditions[0]
+        : and(...conditions);
+
+    const rows = whereClause
+      ? await db
+          .select({
+            order: orders,
+            waiter: users,
+            item: orderItems,
+            menuItem: menuItems,
+          })
+          .from(orders)
+          .innerJoin(users, eq(orders.waiterId, users.id))
+          .leftJoin(orderItems, eq(orders.id, orderItems.orderId))
+          .leftJoin(menuItems, eq(orderItems.menuItemId, menuItems.id))
+          .where(whereClause)
+          .orderBy(desc(orders.createdAt))
+      : await db
+          .select({
+            order: orders,
+            waiter: users,
+            item: orderItems,
+            menuItem: menuItems,
+          })
+          .from(orders)
+          .innerJoin(users, eq(orders.waiterId, users.id))
+          .leftJoin(orderItems, eq(orders.id, orderItems.orderId))
+          .leftJoin(menuItems, eq(orderItems.menuItemId, menuItems.id))
+          .orderBy(desc(orders.createdAt));
+
+    return this.mapDrizzleRowsToOrders(rows);
   }
 
   /**
    * Find order by ID
    */
   async findById(id: string): Promise<Order | null> {
-    const order = await prisma.order.findUnique({
-      where: { id },
-      include: {
-        waiter: { select: { name: true, nameAm: true } },
-        items: {
-          include: {
-            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
-          },
-        },
-      },
-    });
+    const rows = await db
+      .select({
+        order: orders,
+        waiter: users,
+        item: orderItems,
+        menuItem: menuItems,
+      })
+      .from(orders)
+      .innerJoin(users, eq(orders.waiterId, users.id))
+      .leftJoin(orderItems, eq(orders.id, orderItems.orderId))
+      .leftJoin(menuItems, eq(orderItems.menuItemId, menuItems.id))
+      .where(eq(orders.id, id));
 
-    if (!order) {
+    if (rows.length === 0) {
       return null;
     }
 
-    return this.mapToOrder(order);
+    const mapped = this.mapDrizzleRowsToOrders(rows);
+    return mapped[0] || null;
   }
 
   /**
@@ -450,7 +502,7 @@ export class OrderService {
    */
   private calculateTotal(
     items: OrderItemDTO[],
-    menuItemMap: Map<string, { price: Decimal }>
+    menuItemMap: Map<string, { price: string | number }>
   ): number {
     return items.reduce((sum, item) => {
       const menuItem = menuItemMap.get(item.menuItemId);
@@ -491,9 +543,11 @@ export class OrderService {
    * Verify a pending order (Admin updates status to PAID)
    */
   async verifyOrder(id: string): Promise<Order> {
-    const existing = await prisma.order.findUnique({
-      where: { id },
-    });
+    const [existing] = await db
+      .select({ id: orders.id, status: orders.status })
+      .from(orders)
+      .where(eq(orders.id, id))
+      .limit(1);
 
     if (!existing) {
       throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
@@ -506,27 +560,25 @@ export class OrderService {
       );
     }
 
-    const order = await prisma.order.update({
-      where: { id },
-      data: {
+    await db
+      .update(orders)
+      .set({
         status: "PAID",
         paidAt: new Date(),
-      },
-      include: {
-        waiter: { select: { name: true, nameAm: true } },
-        items: {
-          include: {
-            menuItem: { select: { name: true, nameAm: true, category: true, station: true } },
-          },
-        },
-      },
-    });
+        updatedAt: new Date(),
+      })
+      .where(eq(orders.id, id));
 
-    return this.mapToOrder(order);
+    const order = await this.findById(id);
+    if (!order) {
+      throw notFoundError(ErrorCode.NOT_FOUND_ORDER, "Order not found");
+    }
+
+    return order;
   }
 
   /**
-   * Map Prisma Order to Order type
+   * Map database order row to Order type
    */
   private mapToOrder(order: any): Order {
     return {
@@ -539,6 +591,7 @@ export class OrderService {
       paymentType: order.paymentType,
       receiptImage: order.receiptUrl,
       total: Number(order.total),
+        tipAmount: order.tipAmount ? Number(order.tipAmount) : null,
       items: order.items.map((item: any) => ({
         id: item.id,
         menuItemId: item.menuItemId,
@@ -557,6 +610,60 @@ export class OrderService {
       updatedAt: order.updatedAt,
       paidAt: order.paidAt,
     };
+  }
+
+  private mapDrizzleRowsToOrders(
+    rows: Array<{
+      order: typeof orders.$inferSelect;
+      waiter: typeof users.$inferSelect;
+      item: typeof orderItems.$inferSelect | null;
+      menuItem: typeof menuItems.$inferSelect | null;
+    }>
+  ): Order[] {
+    const grouped = new Map<string, Order>();
+
+    for (const row of rows) {
+      if (!grouped.has(row.order.id)) {
+        grouped.set(row.order.id, {
+          id: row.order.id,
+          waiterId: row.order.waiterId,
+          waiter: {
+            name: row.waiter.name,
+            nameAm: row.waiter.nameAm,
+          },
+          tableNumber: row.order.tableNumber,
+          dailyOrderNumber: row.order.dailyOrderNumber,
+          status: row.order.status,
+          paymentType: row.order.paymentType,
+          receiptImage: row.order.receiptUrl,
+          total: Number(row.order.total),
+          tipAmount: row.order.tipAmount ? Number(row.order.tipAmount) : null,
+          items: [],
+          createdAt: row.order.createdAt,
+          updatedAt: row.order.updatedAt,
+          paidAt: row.order.paidAt,
+        });
+      }
+
+      if (row.item && row.menuItem) {
+        grouped.get(row.order.id)!.items.push({
+          id: row.item.id,
+          menuItemId: row.item.menuItemId,
+          quantity: row.item.quantity,
+          unitPrice: Number(row.item.unitPrice),
+          menuItemName: row.menuItem.name,
+          menuItemNameAm: row.menuItem.nameAm,
+          menuItem: {
+            name: row.menuItem.name,
+            nameAm: row.menuItem.nameAm,
+            category: row.menuItem.category,
+            station: row.menuItem.station,
+          },
+        });
+      }
+    }
+
+    return Array.from(grouped.values());
   }
 }
 

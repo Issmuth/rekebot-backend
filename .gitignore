@@ -27,9 +27,5 @@ npm-debug.log*
 # Coverage
 coverage/
 
-# Prisma
-prisma/*.db
-prisma/*.db-journal
-
 # Uploads
 uploads/

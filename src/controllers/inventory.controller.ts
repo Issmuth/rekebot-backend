@@ -153,6 +153,29 @@ export const updateIngredient = async (
 };
 
 /**
+ * Delete an ingredient
+ * DELETE /api/ingredients/:id
+ */
+export const deleteIngredient = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const deleted = await inventoryService.deleteIngredient(id);
+
+    res.json({
+      success: true,
+      message: "Ingredient deleted successfully",
+      data: deleted,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Update stock level with adjustment tracking
  * POST /api/ingredients/:id/stock
  * Requirements: 4.2

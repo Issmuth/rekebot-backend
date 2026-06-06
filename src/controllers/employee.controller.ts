@@ -55,6 +55,56 @@ export const getEmployeeById = async (
 };
 
 /**
+ * Get employee tips summary
+ * GET /api/employees/:id/tips
+ */
+export const getEmployeeTipsSummary = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { startDate, endDate } = req.query;
+
+    const filters: { startDate?: Date; endDate?: Date } = {};
+
+    if (startDate && typeof startDate === "string") {
+      const parsedStartDate = new Date(startDate);
+      if (isNaN(parsedStartDate.getTime())) {
+        throw new AppError(
+          400,
+          ErrorCode.VALIDATION_INVALID_FORMAT,
+          "Invalid startDate format"
+        );
+      }
+      filters.startDate = parsedStartDate;
+    }
+
+    if (endDate && typeof endDate === "string") {
+      const parsedEndDate = new Date(endDate);
+      if (isNaN(parsedEndDate.getTime())) {
+        throw new AppError(
+          400,
+          ErrorCode.VALIDATION_INVALID_FORMAT,
+          "Invalid endDate format"
+        );
+      }
+      filters.endDate = parsedEndDate;
+    }
+
+    const summary = await employeeService.getTipsSummary(id, filters);
+
+    res.json({
+      success: true,
+      data: summary,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Create a new employee
  * POST /api/employees
  * Requirements: 1.1
@@ -65,29 +115,46 @@ export const createEmployee = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password, name, nameAm, role, salary, phone } = req.body;
+    const { email, password, pin, name, nameAm, role, salary, phone } = req.body;
 
     // Validate required fields
-    if (!email || !password || !name || !role) {
+    if (!email || !name || !role) {
       throw new AppError(
         400,
         ErrorCode.VALIDATION_REQUIRED_FIELD,
-        "Email, password, name, and role are required"
+        "Email, name, and role are required"
       );
     }
 
     // Validate role
-    if (role !== "ADMIN" && role !== "EMPLOYEE") {
+    if (role !== "ADMIN" && role !== "CASHIER" && role !== "EMPLOYEE") {
       throw new AppError(
         400,
         ErrorCode.VALIDATION_INVALID_FORMAT,
-        "Role must be ADMIN or EMPLOYEE"
+        "Role must be ADMIN, CASHIER, or EMPLOYEE"
+      );
+    }
+
+    if ((role === "ADMIN" || role === "CASHIER") && !password) {
+      throw new AppError(
+        400,
+        ErrorCode.VALIDATION_REQUIRED_FIELD,
+        "Password is required for admin and cashier accounts"
+      );
+    }
+
+    if (role === "EMPLOYEE" && !pin) {
+      throw new AppError(
+        400,
+        ErrorCode.VALIDATION_REQUIRED_FIELD,
+        "PIN is required for employee accounts"
       );
     }
 
     const employee = await employeeService.create({
       email,
       password,
+      pin,
       name,
       nameAm,
       role,
@@ -129,6 +196,39 @@ export const updateEmployee = async (
     res.json({
       success: true,
       data: employee,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Change an employee PIN
+ * PUT /api/employees/:id/pin
+ */
+export const changeEmployeePin = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { pin, password } = req.body;
+    const resolvedPin = typeof pin === "string" ? pin : password;
+
+    if (!resolvedPin) {
+      throw new AppError(
+        400,
+        ErrorCode.VALIDATION_REQUIRED_FIELD,
+        "PIN is required"
+      );
+    }
+
+    await employeeService.changePin(id, resolvedPin);
+
+    res.json({
+      success: true,
+      message: "PIN updated successfully",
     });
   } catch (error) {
     next(error);

@@ -3,7 +3,7 @@ import {
   getPreferences,
   updatePreferences,
 } from "../controllers/notification.controller";
-import { authenticate, requireAdmin } from "../middleware/auth";
+import { authenticate, requireAdmin, requireAdminAccess } from "../middleware/auth";
 
 const router = Router();
 
@@ -12,7 +12,7 @@ const router = Router();
  * Get notification preferences for the authenticated admin
  * Requirements: 5.1
  */
-router.get("/preferences", authenticate, requireAdmin, getPreferences);
+router.get("/preferences", authenticate, requireAdminAccess, getPreferences);
 
 /**
  * PUT /api/notifications/preferences

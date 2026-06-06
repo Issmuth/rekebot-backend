@@ -38,6 +38,37 @@ export const login = async (
 };
 
 /**
+ * Waiter login handler
+ * POST /api/auth/waiter-login
+ */
+export const waiterLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name, password } = req.body;
+
+    if (!name || !password) {
+      throw new AppError(
+        400,
+        ErrorCode.VALIDATION_REQUIRED_FIELD,
+        "Name and password are required"
+      );
+    }
+
+    const result = await authService.waiterLogin(name, password);
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Admin logout handler
  * POST /api/auth/logout
  * Requirements: 8.6

@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import prisma from "../lib/prisma";
+import { and, asc, eq } from "drizzle-orm";
+import { users } from "../db/schema";
+import { db } from "../lib/drizzle";
 import { AuthResult, WaiterProfile } from "../types";
 import { ErrorCode, authError } from "../utils/errors";
 
@@ -13,19 +15,21 @@ const invalidatedTokens = new Set<string>();
 export interface TokenPayload {
   userId: string;
   email: string;
-  role: "ADMIN" | "EMPLOYEE";
+  role: "ADMIN" | "CASHIER" | "EMPLOYEE";
 }
 
 export class AuthService {
   /**
-   * Authenticate admin user with email and password
+  * Authenticate admin or cashier user with email and password
    * Requirements: 8.1, 8.2
    */
   async login(email: string, password: string): Promise<AuthResult> {
     // Find user by email
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
 
     // Check if user exists
     if (!user) {
@@ -40,8 +44,8 @@ export class AuthService {
       throw authError(ErrorCode.AUTH_USER_INACTIVE, "User account is inactive");
     }
 
-    // Check if user is admin
-    if (user.role !== "ADMIN") {
+    // Check if user can access admin pages
+    if (user.role !== "ADMIN" && user.role !== "CASHIER") {
       throw authError(
         ErrorCode.AUTH_INVALID_CREDENTIALS,
         "Invalid email or password"
@@ -49,6 +53,59 @@ export class AuthService {
     }
 
     // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordValid) {
+      throw authError(
+        ErrorCode.AUTH_INVALID_CREDENTIALS,
+        "Invalid email or password"
+      );
+    }
+
+    const token = this.generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return {
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    };
+  }
+
+  /**
+   * Authenticate waiter user with name and password
+   */
+  async waiterLogin(name: string, password: string): Promise<AuthResult> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.name, name))
+      .limit(1);
+
+    if (!user) {
+      throw authError(
+        ErrorCode.AUTH_INVALID_CREDENTIALS,
+        "Invalid email or password"
+      );
+    }
+
+    if (!user.isActive) {
+      throw authError(ErrorCode.AUTH_USER_INACTIVE, "User account is inactive");
+    }
+
+    if (user.role !== "EMPLOYEE") {
+      throw authError(
+        ErrorCode.AUTH_INVALID_CREDENTIALS,
+        "Invalid email or password"
+      );
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
       throw authError(
@@ -97,9 +154,11 @@ export class AuthService {
       const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
 
       // Verify user still exists and is active
-      const user = await prisma.user.findUnique({
-        where: { id: decoded.userId },
-      });
+      const [user] = await db
+        .select({ id: users.id, isActive: users.isActive })
+        .from(users)
+        .where(eq(users.id, decoded.userId))
+        .limit(1);
 
       if (!user || !user.isActive) {
         return null;
@@ -116,22 +175,62 @@ export class AuthService {
    * Requirements: 8.3, 8.4
    */
   async getActiveWaiters(): Promise<WaiterProfile[]> {
-    const waiters = await prisma.user.findMany({
-      where: {
-        role: "EMPLOYEE",
-        isActive: true,
-      },
-      select: {
-        id: true,
-        name: true,
-        nameAm: true,
-      },
-      orderBy: {
-        name: "asc",
-      },
-    });
+    const waiters = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        nameAm: users.nameAm,
+      })
+      .from(users)
+      .where(and(eq(users.role, "EMPLOYEE"), eq(users.isActive, true)))
+      .orderBy(asc(users.name));
 
     return waiters;
+  }
+
+  /**
+   * Resolve an active waiter by PIN.
+   */
+  async authorizeWaiterByPin(pin: string): Promise<{
+    id: string;
+    email: string;
+    name: string;
+    nameAm?: string | null;
+    role: "ADMIN" | "CASHIER" | "EMPLOYEE";
+  }> {
+    if (!/^\d{4}$/.test(pin.trim())) {
+      throw authError(
+        ErrorCode.AUTH_INVALID_CREDENTIALS,
+        "Invalid waiter PIN"
+      );
+    }
+
+    const activeWaiters = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        name: users.name,
+        nameAm: users.nameAm,
+        role: users.role,
+        passwordHash: users.passwordHash,
+      })
+      .from(users)
+      .where(and(eq(users.role, "EMPLOYEE"), eq(users.isActive, true)));
+
+    for (const waiter of activeWaiters) {
+      const isPinValid = await bcrypt.compare(pin.trim(), waiter.passwordHash);
+      if (isPinValid) {
+        return {
+          id: waiter.id,
+          email: waiter.email,
+          name: waiter.name,
+          nameAm: waiter.nameAm,
+          role: waiter.role,
+        };
+      }
+    }
+
+    throw authError(ErrorCode.AUTH_INVALID_CREDENTIALS, "Invalid waiter PIN");
   }
 
   /**

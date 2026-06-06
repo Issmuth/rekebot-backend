@@ -1,4 +1,13 @@
-import prisma from "../lib/prisma";
+import { and, asc, eq, gte, inArray, lte, sql } from "drizzle-orm";
+import {
+  ingredients as ingredientsTable,
+  menuItemIngredients,
+  menuItems as menuItemsTable,
+  orderItems,
+  orders,
+} from "../db/schema";
+import { db } from "../lib/drizzle";
+import { randomUUID } from "crypto";
 import {
   CreateMenuItemDTO,
   UpdateMenuItemDTO,
@@ -7,7 +16,6 @@ import {
   Station,
 } from "../types";
 import { ErrorCode, notFoundError, validationError } from "../utils/errors";
-import { Decimal } from "@prisma/client/runtime/library";
 
 export interface MenuItem {
   id: string;
@@ -33,6 +41,7 @@ export interface IngredientMapping {
   ingredientNameAm?: string | null;
   unit: string;
   quantityPerServing: number;
+  currentStock: number;
 }
 
 export class MenuService {
@@ -49,33 +58,42 @@ export class MenuService {
       data.ingredients.map((i) => i.ingredientId)
     );
 
-    // Create menu item with ingredient mappings
-    const menuItem = await prisma.menuItem.create({
-      data: {
-        name: data.name,
-        nameAm: data.nameAm,
-        price: data.price,
-        station: data.station,
-        category: data.category,
-        categoryAm: data.categoryAm,
-        imageUrl: data.imageUrl,
-        ingredients: {
-          create: data.ingredients.map((ing) => ({
-            ingredientId: ing.ingredientId,
-            quantityPerServing: ing.quantityPerServing,
-          })),
-        },
-      },
-      include: {
-        ingredients: {
-          include: {
-            ingredient: true,
-          },
-        },
-      },
+    const createdId = await db.transaction(async (tx) => {
+      const now = new Date();
+      const [created] = await tx
+        .insert(menuItemsTable)
+        .values({
+          id: randomUUID(),
+          name: data.name,
+          nameAm: data.nameAm,
+          price: String(data.price),
+          station: data.station ?? "BAR",
+          category: data.category,
+          categoryAm: data.categoryAm,
+          imageUrl: data.imageUrl,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .returning({ id: menuItemsTable.id });
+
+      await tx.insert(menuItemIngredients).values(
+        data.ingredients.map((ing) => ({
+          id: randomUUID(),
+          menuItemId: created.id,
+          ingredientId: ing.ingredientId,
+          quantityPerServing: String(ing.quantityPerServing),
+        }))
+      );
+
+      return created.id;
     });
 
-    return this.mapToMenuItemWithIngredients(menuItem);
+    const menuItem = await this.findById(createdId);
+    if (!menuItem) {
+      throw notFoundError(ErrorCode.NOT_FOUND_MENU_ITEM, "Menu item not found");
+    }
+
+    return menuItem;
   }
 
   /**
@@ -87,9 +105,16 @@ export class MenuService {
     data: UpdateMenuItemDTO
   ): Promise<MenuItemWithIngredients> {
     // Check if menu item exists
-    const existing = await prisma.menuItem.findUnique({
-      where: { id },
-    });
+    const [existing] = await db
+      .select({
+        id: menuItemsTable.id,
+        name: menuItemsTable.name,
+        price: menuItemsTable.price,
+        category: menuItemsTable.category,
+      })
+      .from(menuItemsTable)
+      .where(eq(menuItemsTable.id, id))
+      .limit(1);
 
     if (!existing) {
       throw notFoundError(ErrorCode.NOT_FOUND_MENU_ITEM, "Menu item not found");
@@ -112,46 +137,48 @@ export class MenuService {
       );
     }
 
-    // Update menu item
-    const menuItem = await prisma.$transaction(async (tx) => {
-      // If ingredients are being updated, delete existing and create new
+    await db.transaction(async (tx) => {
       if (data.ingredients) {
-        await tx.menuItemIngredient.deleteMany({
-          where: { menuItemId: id },
-        });
+        await tx
+          .delete(menuItemIngredients)
+          .where(eq(menuItemIngredients.menuItemId, id));
       }
 
-      return tx.menuItem.update({
-        where: { id },
-        data: {
-          ...(data.name !== undefined && { name: data.name }),
-          ...(data.nameAm !== undefined && { nameAm: data.nameAm }),
-          ...(data.station !== undefined && { station: data.station }),
-          ...(data.price !== undefined && { price: data.price }),
-          ...(data.category !== undefined && { category: data.category }),
-          ...(data.categoryAm !== undefined && { categoryAm: data.categoryAm }),
-          ...(data.isActive !== undefined && { isActive: data.isActive }),
-          ...(data.imageUrl !== undefined && { imageUrl: data.imageUrl }),
-          ...(data.ingredients && {
-            ingredients: {
-              create: data.ingredients.map((ing) => ({
-                ingredientId: ing.ingredientId,
-                quantityPerServing: ing.quantityPerServing,
-              })),
-            },
-          }),
-        },
-        include: {
-          ingredients: {
-            include: {
-              ingredient: true,
-            },
-          },
-        },
-      });
+      await tx
+        .update(menuItemsTable)
+        .set({
+          ...(data.name !== undefined ? { name: data.name } : {}),
+          ...(data.nameAm !== undefined ? { nameAm: data.nameAm } : {}),
+          ...(data.station !== undefined ? { station: data.station } : {}),
+          ...(data.price !== undefined ? { price: String(data.price) } : {}),
+          ...(data.category !== undefined ? { category: data.category } : {}),
+          ...(data.categoryAm !== undefined
+            ? { categoryAm: data.categoryAm }
+            : {}),
+          ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
+          ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl } : {}),
+          updatedAt: new Date(),
+        })
+        .where(eq(menuItemsTable.id, id));
+
+      if (data.ingredients && data.ingredients.length > 0) {
+        await tx.insert(menuItemIngredients).values(
+          data.ingredients.map((ing) => ({
+            id: randomUUID(),
+            menuItemId: id,
+            ingredientId: ing.ingredientId,
+            quantityPerServing: String(ing.quantityPerServing),
+          }))
+        );
+      }
     });
 
-    return this.mapToMenuItemWithIngredients(menuItem);
+    const menuItem = await this.findById(id);
+    if (!menuItem) {
+      throw notFoundError(ErrorCode.NOT_FOUND_MENU_ITEM, "Menu item not found");
+    }
+
+    return menuItem;
   }
 
   /**
@@ -160,19 +187,21 @@ export class MenuService {
    */
   async delete(id: string): Promise<void> {
     // Check if menu item exists
-    const existing = await prisma.menuItem.findUnique({
-      where: { id },
-    });
+    const [existing] = await db
+      .select({ id: menuItemsTable.id })
+      .from(menuItemsTable)
+      .where(eq(menuItemsTable.id, id))
+      .limit(1);
 
     if (!existing) {
       throw notFoundError(ErrorCode.NOT_FOUND_MENU_ITEM, "Menu item not found");
     }
 
     // Soft delete by marking as inactive
-    await prisma.menuItem.update({
-      where: { id },
-      data: { isActive: false },
-    });
+    await db
+      .update(menuItemsTable)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(menuItemsTable.id, id));
   }
 
   /**
@@ -182,41 +211,71 @@ export class MenuService {
   async findAll(
     includeInactive: boolean = false
   ): Promise<MenuItemWithIngredients[]> {
-    const menuItems = await prisma.menuItem.findMany({
-      where: includeInactive ? {} : { isActive: true },
-      include: {
-        ingredients: {
-          include: {
-            ingredient: true,
-          },
-        },
-      },
-      orderBy: [{ category: "asc" }, { name: "asc" }],
-    });
+    const rows = includeInactive
+      ? await db
+          .select({
+            menuItem: menuItemsTable,
+            mapping: menuItemIngredients,
+            ingredient: ingredientsTable,
+          })
+          .from(menuItemsTable)
+          .leftJoin(
+            menuItemIngredients,
+            eq(menuItemsTable.id, menuItemIngredients.menuItemId)
+          )
+          .leftJoin(
+            ingredientsTable,
+            eq(menuItemIngredients.ingredientId, ingredientsTable.id)
+          )
+          .orderBy(asc(menuItemsTable.category), asc(menuItemsTable.name))
+      : await db
+          .select({
+            menuItem: menuItemsTable,
+            mapping: menuItemIngredients,
+            ingredient: ingredientsTable,
+          })
+          .from(menuItemsTable)
+          .leftJoin(
+            menuItemIngredients,
+            eq(menuItemsTable.id, menuItemIngredients.menuItemId)
+          )
+          .leftJoin(
+            ingredientsTable,
+            eq(menuItemIngredients.ingredientId, ingredientsTable.id)
+          )
+          .where(eq(menuItemsTable.isActive, true))
+          .orderBy(asc(menuItemsTable.category), asc(menuItemsTable.name));
 
-    return menuItems.map(this.mapToMenuItemWithIngredients);
+    return this.mapDrizzleRowsToMenuItems(rows);
   }
 
   /**
    * Find menu item by ID
    */
   async findById(id: string): Promise<MenuItemWithIngredients | null> {
-    const menuItem = await prisma.menuItem.findUnique({
-      where: { id },
-      include: {
-        ingredients: {
-          include: {
-            ingredient: true,
-          },
-        },
-      },
-    });
+    const rows = await db
+      .select({
+        menuItem: menuItemsTable,
+        mapping: menuItemIngredients,
+        ingredient: ingredientsTable,
+      })
+      .from(menuItemsTable)
+      .leftJoin(
+        menuItemIngredients,
+        eq(menuItemsTable.id, menuItemIngredients.menuItemId)
+      )
+      .leftJoin(
+        ingredientsTable,
+        eq(menuItemIngredients.ingredientId, ingredientsTable.id)
+      )
+      .where(eq(menuItemsTable.id, id));
 
-    if (!menuItem) {
+    if (rows.length === 0) {
       return null;
     }
 
-    return this.mapToMenuItemWithIngredients(menuItem);
+    const mapped = this.mapDrizzleRowsToMenuItems(rows);
+    return mapped[0] || null;
   }
 
   /**
@@ -234,21 +293,21 @@ export class MenuService {
     monthStart.setDate(monthStart.getDate() - 30);
 
     const getCount = async (fromDate: Date) => {
-      const result = await prisma.orderItem.aggregate({
-        _sum: {
-          quantity: true,
-        },
-        where: {
-          menuItemId: id,
-          order: {
-            createdAt: {
-              gte: fromDate,
-            },
-            status: "PAID",
-          },
-        },
-      });
-      return result._sum.quantity || 0;
+      const [result] = await db
+        .select({
+          count: sql<number>`coalesce(sum(${orderItems.quantity}), 0)`,
+        })
+        .from(orderItems)
+        .innerJoin(orders, eq(orderItems.orderId, orders.id))
+        .where(
+          and(
+            eq(orderItems.menuItemId, id),
+            eq(orders.status, "PAID"),
+            gte(orders.createdAt, fromDate)
+          )
+        );
+
+      return Number(result?.count || 0);
     };
 
     const [daily, weekly, monthly] = await Promise.all([
@@ -270,22 +329,22 @@ export class MenuService {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const result = await prisma.orderItem.aggregate({
-      _sum: {
-        quantity: true,
-      },
-      where: {
-        menuItemId: id,
-        order: {
-          createdAt: {
-            gte: startOfDay,
-            lte: endOfDay,
-          },
-          status: "PAID",
-        },
-      },
-    });
-    return result._sum.quantity || 0;
+    const [result] = await db
+      .select({
+        count: sql<number>`coalesce(sum(${orderItems.quantity}), 0)`,
+      })
+      .from(orderItems)
+      .innerJoin(orders, eq(orderItems.orderId, orders.id))
+      .where(
+        and(
+          eq(orderItems.menuItemId, id),
+          eq(orders.status, "PAID"),
+          gte(orders.createdAt, startOfDay),
+          lte(orders.createdAt, endOfDay)
+        )
+      );
+
+    return Number(result?.count || 0);
   }
 
   /**
@@ -293,22 +352,59 @@ export class MenuService {
    * Requirements: 7.1, 7.3, 7.4
    */
   async getAvailability(): Promise<MenuItemAvailability[]> {
-    const menuItems = await prisma.menuItem.findMany({
-      where: { isActive: true },
-      include: {
-        ingredients: {
-          include: {
-            ingredient: true,
-          },
-        },
-      },
-      orderBy: [{ category: "asc" }, { name: "asc" }],
-    });
+    const rows = await db
+      .select({
+        menuItemId: menuItemsTable.id,
+        menuItemName: menuItemsTable.name,
+        quantityPerServing: menuItemIngredients.quantityPerServing,
+        ingredientCurrentStock: ingredientsTable.currentStock,
+      })
+      .from(menuItemsTable)
+      .leftJoin(
+        menuItemIngredients,
+        eq(menuItemsTable.id, menuItemIngredients.menuItemId)
+      )
+      .leftJoin(
+        ingredientsTable,
+        eq(menuItemIngredients.ingredientId, ingredientsTable.id)
+      )
+      .where(eq(menuItemsTable.isActive, true))
+      .orderBy(asc(menuItemsTable.category), asc(menuItemsTable.name));
 
-    return menuItems.map((item) => {
-      const availableServings = this.calculateAvailableServings(
-        item.ingredients
-      );
+    const grouped = new Map<
+      string,
+      {
+        name: string;
+        ingredients: Array<{
+          quantityPerServing: string | number;
+          ingredient: { currentStock: string | number };
+        }>;
+      }
+    >();
+
+    for (const row of rows) {
+      if (!grouped.has(row.menuItemId)) {
+        grouped.set(row.menuItemId, {
+          name: row.menuItemName,
+          ingredients: [],
+        });
+      }
+
+      if (
+        row.quantityPerServing !== null &&
+        row.ingredientCurrentStock !== null
+      ) {
+        grouped.get(row.menuItemId)!.ingredients.push({
+          quantityPerServing: row.quantityPerServing,
+          ingredient: {
+            currentStock: row.ingredientCurrentStock,
+          },
+        });
+      }
+    }
+
+    return Array.from(grouped.entries()).map(([menuItemId, item]) => {
+      const availableServings = this.calculateAvailableServings(item.ingredients);
 
       let status: "available" | "limited" | "unavailable";
       if (availableServings === 0) {
@@ -320,7 +416,7 @@ export class MenuService {
       }
 
       return {
-        menuItemId: item.id,
+        menuItemId,
         name: item.name,
         availableServings,
         status,
@@ -334,8 +430,8 @@ export class MenuService {
    */
   private calculateAvailableServings(
     ingredients: Array<{
-      quantityPerServing: Decimal;
-      ingredient: { currentStock: Decimal };
+      quantityPerServing: string | number;
+      ingredient: { currentStock: string | number };
     }>
   ): number {
     if (ingredients.length === 0) {
@@ -405,7 +501,11 @@ export class MenuService {
    */
   private validatePartialMenuItemData(
     data: UpdateMenuItemDTO,
-    existing: { name: string; price: Decimal; category: string }
+    existing: {
+      name: string;
+      price: string | number;
+      category: string;
+    }
   ): void {
     const errors: string[] = [];
 
@@ -454,13 +554,16 @@ export class MenuService {
    * Verify that all ingredient IDs exist in the database
    */
   private async verifyIngredientsExist(ingredientIds: string[]): Promise<void> {
-    const ingredients = await prisma.ingredient.findMany({
-      where: { id: { in: ingredientIds } },
-      select: { id: true },
-    });
+    const uniqueIds = Array.from(new Set(ingredientIds));
+    const ingredientRows = uniqueIds.length
+      ? await db
+          .select({ id: ingredientsTable.id })
+          .from(ingredientsTable)
+          .where(inArray(ingredientsTable.id, uniqueIds))
+      : [];
 
-    const foundIds = new Set(ingredients.map((i) => i.id));
-    const missingIds = ingredientIds.filter((id) => !foundIds.has(id));
+    const foundIds = new Set(ingredientRows.map((i) => i.id));
+    const missingIds = uniqueIds.filter((id) => !foundIds.has(id));
 
     if (missingIds.length > 0) {
       throw notFoundError(
@@ -471,13 +574,13 @@ export class MenuService {
   }
 
   /**
-   * Map Prisma MenuItem to MenuItemWithIngredients type
+   * Map database menu item row to MenuItemWithIngredients type
    */
   private mapToMenuItemWithIngredients(item: {
     id: string;
     name: string;
     nameAm?: string | null;
-    price: Decimal;
+    price: string | number;
     category: string;
     categoryAm?: string | null;
     station: Station; // Added station property
@@ -487,11 +590,12 @@ export class MenuService {
     updatedAt: Date;
     ingredients: Array<{
       ingredientId: string;
-      quantityPerServing: Decimal;
+      quantityPerServing: string | number;
       ingredient: {
         name: string;
         nameAm?: string | null;
         unit: string;
+        currentStock: string | number;
       };
     }>;
   }): MenuItemWithIngredients {
@@ -513,8 +617,53 @@ export class MenuService {
         ingredientNameAm: ing.ingredient.nameAm,
         unit: ing.ingredient.unit,
         quantityPerServing: Number(ing.quantityPerServing),
+        currentStock: Number(ing.ingredient.currentStock),
       })),
     };
+  }
+
+  private mapDrizzleRowsToMenuItems(
+    rows: Array<{
+      menuItem: typeof menuItemsTable.$inferSelect;
+      mapping: typeof menuItemIngredients.$inferSelect | null;
+      ingredient: typeof ingredientsTable.$inferSelect | null;
+    }>
+  ): MenuItemWithIngredients[] {
+    const grouped = new Map<string, MenuItemWithIngredients>();
+
+    for (const row of rows) {
+      const existing = grouped.get(row.menuItem.id);
+
+      if (!existing) {
+        grouped.set(row.menuItem.id, {
+          id: row.menuItem.id,
+          name: row.menuItem.name,
+          nameAm: row.menuItem.nameAm,
+          price: Number(row.menuItem.price),
+          category: row.menuItem.category,
+          categoryAm: row.menuItem.categoryAm,
+          station: row.menuItem.station,
+          imageUrl: row.menuItem.imageUrl,
+          isActive: row.menuItem.isActive,
+          createdAt: row.menuItem.createdAt,
+          updatedAt: row.menuItem.updatedAt,
+          ingredients: [],
+        });
+      }
+
+      if (row.mapping && row.ingredient) {
+        grouped.get(row.menuItem.id)!.ingredients.push({
+          ingredientId: row.mapping.ingredientId,
+          ingredientName: row.ingredient.name,
+          ingredientNameAm: row.ingredient.nameAm,
+          unit: row.ingredient.unit,
+          quantityPerServing: Number(row.mapping.quantityPerServing),
+          currentStock: Number(row.ingredient.currentStock),
+        });
+      }
+    }
+
+    return Array.from(grouped.values());
   }
 }
 

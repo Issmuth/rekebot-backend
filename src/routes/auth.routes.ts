@@ -1,6 +1,11 @@
 import { Router } from "express";
-import { login, logout, getWaiters } from "../controllers/auth.controller";
-import { authenticate, requireAdmin } from "../middleware/auth";
+import {
+	login,
+	waiterLogin,
+	logout,
+	getWaiters,
+} from "../controllers/auth.controller";
+import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
@@ -12,11 +17,17 @@ const router = Router();
 router.post("/login", login);
 
 /**
+ * POST /api/auth/waiter-login
+ * Waiter authentication
+ */
+router.post("/waiter-login", waiterLogin);
+
+/**
  * POST /api/auth/logout
  * Admin session invalidation (requires authentication)
  * Requirements: 8.6
  */
-router.post("/logout", authenticate, requireAdmin, logout);
+router.post("/logout", authenticate, logout);
 
 /**
  * GET /api/auth/waiters

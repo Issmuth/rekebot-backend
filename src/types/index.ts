@@ -1,6 +1,6 @@
 // Shared types and DTOs
 
-export type Role = "ADMIN" | "EMPLOYEE";
+export type Role = "ADMIN" | "CASHIER" | "EMPLOYEE";
 export type OrderStatus =
   | "PENDING"
   | "PENDING_VERIFICATION"
@@ -15,7 +15,8 @@ export interface CheckDTO {
 
 export interface CreateEmployeeDTO {
   email: string;
-  password: string;
+  password?: string;
+  pin?: string;
   name: string;
   nameAm?: string;
   role: Role;
@@ -81,6 +82,7 @@ export interface OrderItemDTO {
 export interface ConfirmPaymentDTO {
   paymentType: PaymentType;
   receiptImage?: string;
+  tipAmount?: number;
 }
 
 // Analytics DTOs
@@ -88,6 +90,9 @@ export interface DashboardData {
   todayRevenue: number;
   weeklyRevenue: number;
   monthlyRevenue: number;
+  todayTips: number;
+  weeklyTips: number;
+  monthlyTips: number;
   topItems: { name: string; count: number }[];
   lowStockCount: number;
   pendingOrders: number;

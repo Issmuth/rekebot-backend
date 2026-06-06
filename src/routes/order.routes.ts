@@ -3,6 +3,7 @@ import { uploadReceipt as uploadMiddleware } from "../middleware/upload";
 import {
   getAllOrders,
   getOrderById,
+  getReceiptImage,
   createOrder,
   updateOrder,
   cancelOrder,
@@ -10,13 +11,13 @@ import {
   uploadReceipt,
   verifyOrder,
 } from "../controllers/order.controller";
+import { authenticate, requireAdmin } from "../middleware/auth";
 
 const router = Router();
 
 /**
  * GET /api/orders
- * List all orders (admin can see all, employees see their own)
- * Requirements: 3.1
+ * Get all orders
  */
 router.get("/", getAllOrders);
 
@@ -25,6 +26,12 @@ router.get("/", getAllOrders);
  * Get a specific order by ID
  */
 router.get("/:id", getOrderById);
+
+/**
+ * GET /api/orders/:id/receipt-image
+ * Get receipt image via authenticated endpoint
+ */
+router.get("/:id/receipt-image", authenticate, getReceiptImage);
 
 /**
  * POST /api/orders
@@ -73,6 +80,6 @@ router.post(
  * POST /api/orders/:id/verify
  * Verify order (admin)
  */
-router.post("/:id/verify", verifyOrder);
+router.post("/:id/verify", authenticate, requireAdmin, verifyOrder);
 
 export default router;

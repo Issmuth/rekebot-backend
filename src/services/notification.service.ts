@@ -1,4 +1,7 @@
-import prisma from "../lib/prisma";
+import { and, eq } from "drizzle-orm";
+import { notificationPreferences, users } from "../db/schema";
+import { db } from "../lib/drizzle";
+import { randomUUID } from "crypto";
 import { NotificationPreferences } from "../types";
 import { ErrorCode, notFoundError } from "../utils/errors";
 
@@ -17,24 +20,32 @@ export class NotificationService {
    * Requirements: 5.1
    */
   async getPreferences(adminId: string): Promise<NotificationPreferences> {
-    // Verify user exists and is admin
-    const user = await prisma.user.findUnique({
-      where: { id: adminId },
-      include: {
-        notificationPreference: true,
-      },
-    });
+    const [user] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.id, adminId))
+      .limit(1);
 
     if (!user) {
       throw notFoundError(ErrorCode.NOT_FOUND_USER, "User not found");
     }
 
+    const [preference] = await db
+      .select({
+        lowStock: notificationPreferences.lowStock,
+        largeOrders: notificationPreferences.largeOrders,
+        employeeActions: notificationPreferences.employeeActions,
+      })
+      .from(notificationPreferences)
+      .where(eq(notificationPreferences.userId, adminId))
+      .limit(1);
+
     // Return existing preferences or defaults
-    if (user.notificationPreference) {
+    if (preference) {
       return {
-        lowStock: user.notificationPreference.lowStock,
-        largeOrders: user.notificationPreference.largeOrders,
-        employeeActions: user.notificationPreference.employeeActions,
+        lowStock: preference.lowStock,
+        largeOrders: preference.largeOrders,
+        employeeActions: preference.employeeActions,
       };
     }
 
@@ -55,29 +66,72 @@ export class NotificationService {
     prefs: NotificationPreferences
   ): Promise<NotificationPreferences> {
     // Verify user exists
-    const user = await prisma.user.findUnique({
-      where: { id: adminId },
-    });
+    const [user] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.id, adminId))
+      .limit(1);
 
     if (!user) {
       throw notFoundError(ErrorCode.NOT_FOUND_USER, "User not found");
     }
 
-    // Upsert preferences
-    const updated = await prisma.notificationPreference.upsert({
-      where: { userId: adminId },
-      update: {
+    const [existing] = await db
+      .select({ id: notificationPreferences.id })
+      .from(notificationPreferences)
+      .where(eq(notificationPreferences.userId, adminId))
+      .limit(1);
+
+    let updated:
+      | {
+          lowStock: boolean;
+          largeOrders: boolean;
+          employeeActions: boolean;
+        }
+      | undefined;
+
+    if (existing) {
+      [updated] = await db
+        .update(notificationPreferences)
+        .set({
+          lowStock: prefs.lowStock,
+          largeOrders: prefs.largeOrders,
+          employeeActions: prefs.employeeActions,
+          updatedAt: new Date(),
+        })
+        .where(eq(notificationPreferences.id, existing.id))
+        .returning({
+          lowStock: notificationPreferences.lowStock,
+          largeOrders: notificationPreferences.largeOrders,
+          employeeActions: notificationPreferences.employeeActions,
+        });
+    } else {
+      const now = new Date();
+      [updated] = await db
+        .insert(notificationPreferences)
+        .values({
+          id: randomUUID(),
+          userId: adminId,
+          lowStock: prefs.lowStock,
+          largeOrders: prefs.largeOrders,
+          employeeActions: prefs.employeeActions,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .returning({
+          lowStock: notificationPreferences.lowStock,
+          largeOrders: notificationPreferences.largeOrders,
+          employeeActions: notificationPreferences.employeeActions,
+        });
+    }
+
+    if (!updated) {
+      return {
         lowStock: prefs.lowStock,
         largeOrders: prefs.largeOrders,
         employeeActions: prefs.employeeActions,
-      },
-      create: {
-        userId: adminId,
-        lowStock: prefs.lowStock,
-        largeOrders: prefs.largeOrders,
-        employeeActions: prefs.employeeActions,
-      },
-    });
+      };
+    }
 
     return {
       lowStock: updated.lowStock,
@@ -131,13 +185,10 @@ export class NotificationService {
     threshold: number
   ): Promise<void> {
     // Get all admins
-    const admins = await prisma.user.findMany({
-      where: {
-        role: "ADMIN",
-        isActive: true,
-      },
-      select: { id: true },
-    });
+    const admins = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(eq(users.role, "ADMIN"), eq(users.isActive, true)));
 
     // Send notification to each admin
     for (const admin of admins) {
@@ -159,13 +210,10 @@ export class NotificationService {
     waiterName: string
   ): Promise<void> {
     // Get all admins
-    const admins = await prisma.user.findMany({
-      where: {
-        role: "ADMIN",
-        isActive: true,
-      },
-      select: { id: true },
-    });
+    const admins = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(eq(users.role, "ADMIN"), eq(users.isActive, true)));
 
     // Send notification to each admin
     for (const admin of admins) {
@@ -186,13 +234,10 @@ export class NotificationService {
     employeeName: string
   ): Promise<void> {
     // Get all admins
-    const admins = await prisma.user.findMany({
-      where: {
-        role: "ADMIN",
-        isActive: true,
-      },
-      select: { id: true },
-    });
+    const admins = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(eq(users.role, "ADMIN"), eq(users.isActive, true)));
 
     // Send notification to each admin
     for (const admin of admins) {

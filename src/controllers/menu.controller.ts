@@ -144,7 +144,8 @@ export const createMenuItem = async (
   next: NextFunction
 ) => {
   try {
-    const { name, nameAm, price, category, categoryAm, ingredients } = req.body;
+    const { name, nameAm, price, category, categoryAm, station, ingredients } =
+      req.body;
     const file = req.file;
 
     // Basic validation - detailed validation in service
@@ -181,6 +182,7 @@ export const createMenuItem = async (
       price: Number(price),
       category,
       categoryAm,
+      station,
       ingredients: parsedIngredients,
       imageUrl,
     });
@@ -212,6 +214,7 @@ export const updateMenuItem = async (
       price,
       category,
       categoryAm,
+      station,
       ingredients,
       isActive,
     } = req.body;
@@ -242,6 +245,7 @@ export const updateMenuItem = async (
       price: price ? Number(price) : undefined,
       category,
       categoryAm,
+      station,
       ingredients: parsedIngredients,
       isActive: isActive === undefined ? undefined : isActive === "true",
       imageUrl,

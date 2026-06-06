@@ -9,7 +9,7 @@ import {
   updateMenuItem,
   deleteMenuItem,
 } from "../controllers/menu.controller";
-import { authenticate, requireAdmin } from "../middleware/auth";
+import { authenticate, requireAdmin, requireAdminAccess } from "../middleware/auth";
 import { uploadMenuImage } from "../middleware/upload";
 
 const router = Router();
@@ -33,7 +33,7 @@ router.get("/", getAllMenuItems);
  * GET /api/menu/:id/stats
  * Get sales statistics for a menu item
  */
-router.get("/:id/stats", authenticate, requireAdmin, getMenuItemStats);
+router.get("/:id/stats", authenticate, requireAdminAccess, getMenuItemStats);
 
 /**
  * GET /api/menu/:id/stats/date
@@ -42,7 +42,7 @@ router.get("/:id/stats", authenticate, requireAdmin, getMenuItemStats);
 router.get(
   "/:id/stats/date",
   authenticate,
-  requireAdmin,
+  requireAdminAccess,
   getMenuItemStatsForDate
 );
 

@@ -1,96 +1,10 @@
 [
   {
-    "menuItem": "Tuna Salad",
+    "menuItem": "Croissant Sandwich",
     "ingredients": [
-      { "name": "Salad", "quantity": "1" },
-      { "name": "Tomato", "quantity": "1" },
-      { "name": "Onion", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" },
-      { "name": "Cucumber", "quantity": "1" },
-      { "name": "Avocado", "quantity": "1" },
-      { "name": "Tuna", "quantity": "1" },
-      { "name": "Bread", "quantity": "3" }
-    ]
-  },
-  {
-    "menuItem": "Mixed Salad",
-    "ingredients": [
-      { "name": "Tomato", "quantity": "1" },
-      { "name": "Onion", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" },
-      { "name": "Salad", "quantity": "1" },
-      { "name": "Cucumber", "quantity": "1" },
-      { "name": "Avocado", "quantity": "1" },
-      { "name": "Carrot", "quantity": "1" },
-      { "name": "Bread", "quantity": "3" }
-    ]
-  },
-  {
-    "menuItem": "Macaroni Salad",
-    "ingredients": [
-      { "name": "Tomato", "quantity": "1" },
-      { "name": "Onion", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" },
-      { "name": "Cucumber", "quantity": "1" },
-      { "name": "Macaroni", "quantity": "1" },
-      { "name": "Parsley", "quantity": "1" }
-    ]
-  },
-  {
-    "menuItem": "Fruit Punch",
-    "ingredients": [
-      { "name": "Mixed Fruit", "quantity": "Any" }
-    ]
-  },
-  {
-    "menuItem": "Tuna Sandwich",
-    "ingredients": [
-      { "name": "Tomato", "quantity": "1" },
-      { "name": "Tuna", "quantity": "1" },
-      { "name": "Bread", "quantity": "4" },
-      { "name": "Potato", "quantity": "1.5" }
-    ]
-  },
-  {
-    "menuItem": "Chicken Wrap",
-    "ingredients": [
-      { "name": "Tomato", "quantity": "1" },
-      { "name": "Potato", "quantity": "1" },
-      { "name": "Chicken", "quantity": "100g" },
-      { "name": "Flour", "quantity": "1" },
-      { "name": "Mayonnaise", "quantity": "1" },
-      { "name": "Ketchup", "quantity": "1" }
-    ]
-  },
-  {
-    "menuItem": "Beef Wrap",
-    "ingredients": [
-      { "name": "Tomato", "quantity": "1" },
-      { "name": "Beef / Meat", "quantity": "100g" },
-      { "name": "Flour", "quantity": "1" },
-      { "name": "Potato", "quantity": "1" },
-      { "name": "Mayonnaise", "quantity": "1" },
-      { "name": "Ketchup", "quantity": "1" }
-    ]
-  },
-  {
-    "menuItem": "Falafel Wrap",
-    "ingredients": [
-      { "name": "Tomato", "quantity": "1" },
-      { "name": "Flour", "quantity": "1" },
-      { "name": "Falafel", "quantity": "100g" },
-      { "name": "Potato", "quantity": "1" }
-    ]
-  },
-  {
-    "menuItem": "Club Sandwich",
-    "ingredients": [
-      { "name": "Chicken", "quantity": "100g" },
-      { "name": "Bread", "quantity": "4" },
-      { "name": "Tomato", "quantity": "1" },
-      { "name": "Egg", "quantity": "1" },
-      { "name": "Mayonnaise", "quantity": "1" },
-      { "name": "Potato", "quantity": "1.5" }
+      { "name": "Croissant", "quantity": "1" },
+      { "name": "Egg", "quantity": "2" },
+      { "name": "Cheese", "quantity": "40g" }
     ]
   },
   {
@@ -100,65 +14,8 @@
       { "name": "Egg", "quantity": "3" },
       { "name": "Onion", "quantity": "1" },
       { "name": "Tomato", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" },
+      { "name": "Pepper (Green/Chili)", "quantity": "1" },
       { "name": "Potato", "quantity": "1.5" }
-    ]
-  },
-  {
-    "menuItem": "Vegetable Rice",
-    "ingredients": [
-      { "name": "Carrot", "quantity": "1" },
-      { "name": "Zucchini", "quantity": "1" },
-      { "name": "Broccoli", "quantity": "1" },
-      { "name": "Cabbage", "quantity": "1" },
-      { "name": "Rice", "quantity": "1" }
-    ]
-  },
-  {
-    "menuItem": "Chicken Curry",
-    "ingredients": [
-      { "name": "Rice", "quantity": "1" },
-      { "name": "Flour", "quantity": "1" },
-      { "name": "Chicken", "quantity": "150g" },
-      { "name": "Sauce", "quantity": "2 ladles" },
-      { "name": "Curry Powder", "quantity": "15g" }
-    ]
-  },
-  {
-    "menuItem": "Potato Curry",
-    "ingredients": [
-      { "name": "Potato", "quantity": "1" },
-      { "name": "Sauce", "quantity": "1" },
-      { "name": "Flour", "quantity": "1" },
-      { "name": "Rice", "quantity": "1" }
-    ]
-  },
-  {
-    "menuItem": "Chicken Fried Rice",
-    "ingredients": [
-      { "name": "Carrot", "quantity": "1" },
-      { "name": "Onion", "quantity": "1" },
-      { "name": "Egg", "quantity": "2" },
-      { "name": "Chicken", "quantity": "70g" },
-      { "name": "Rice", "quantity": "1" }
-    ]
-  },
-  {
-    "menuItem": "Beef Fried Rice",
-    "ingredients": [
-      { "name": "Carrot", "quantity": "1" },
-      { "name": "Onion", "quantity": "1" },
-      { "name": "Egg", "quantity": "2" },
-      { "name": "Beef / Meat", "quantity": "70g" },
-      { "name": "Rice", "quantity": "1" }
-    ]
-  },
-  {
-    "menuItem": "Croissant Sandwich",
-    "ingredients": [
-      { "name": "Croissant", "quantity": "1" },
-      { "name": "Egg", "quantity": "2" },
-      { "name": "Cheese", "quantity": "40g" }
     ]
   },
   {
@@ -168,7 +25,7 @@
       { "name": "Egg", "quantity": "4" },
       { "name": "Onion", "quantity": "1" },
       { "name": "Tomato", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" }
+      { "name": "Pepper (Green/Chili)", "quantity": "1" }
     ]
   },
   {
@@ -192,7 +49,7 @@
       { "name": "Egg", "quantity": "3" },
       { "name": "Bread", "quantity": "3" },
       { "name": "Potato", "quantity": "1" },
-      { "name": "Strawberry", "quantity": "2" }
+      { "name": "Strawberry", "quantity": "2 pcs" }
     ]
   },
   {
@@ -201,7 +58,7 @@
       { "name": "Avocado", "quantity": "1" },
       { "name": "Tomato", "quantity": "1" },
       { "name": "Onion", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" },
+      { "name": "Pepper (Green/Chili)", "quantity": "1" },
       { "name": "Bread", "quantity": "4" }
     ]
   },
@@ -230,10 +87,11 @@
       { "name": "Ful (Fava Beans)", "quantity": "0.5" },
       { "name": "Tomato", "quantity": "1" },
       { "name": "Onion", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" },
+      { "name": "Pepper (Green/Chili)", "quantity": "1" },
       { "name": "Berbere", "quantity": "1" },
       { "name": "Shiro (Sheno)", "quantity": "1 tsp" },
-      { "name": "Egg", "quantity": "1 (or Avocado)" },
+      { "name": "Egg", "quantity": "1" },
+      { "name": "Avocado", "quantity": "1" },
       { "name": "Bread", "quantity": "4" }
     ]
   },
@@ -244,7 +102,7 @@
       { "name": "Bread", "quantity": "2" },
       { "name": "Onion", "quantity": "1" },
       { "name": "Tomato", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" }
+      { "name": "Pepper (Green/Chili)", "quantity": "1" }
     ]
   },
   {
@@ -255,7 +113,7 @@
       { "name": "Chicken", "quantity": "50g" },
       { "name": "Onion", "quantity": "1" },
       { "name": "Tomato", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" }
+      { "name": "Pepper (Green/Chili)", "quantity": "1" }
     ]
   },
   {
@@ -266,7 +124,7 @@
       { "name": "Bread", "quantity": "2" },
       { "name": "Onion", "quantity": "1" },
       { "name": "Tomato", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" }
+      { "name": "Pepper (Green/Chili)", "quantity": "1" }
     ]
   },
   {
@@ -274,12 +132,12 @@
     "ingredients": [
       { "name": "Tomato", "quantity": "1" },
       { "name": "Onion", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" },
+      { "name": "Pepper (Green/Chili)", "quantity": "1" },
       { "name": "Cucumber", "quantity": "1" },
       { "name": "Egg", "quantity": "1" },
       { "name": "Chicken", "quantity": "100g" },
-      { "name": "Strawberry", "quantity": "2" },
-      { "name": "Avocado", "quantity": "1" },
+      { "name": "Strawberry", "quantity": "2 pcs" },
+      { "name": "Avocado", "quantity": "1 pcs" },
       { "name": "Bread", "quantity": "3" }
     ]
   },
@@ -289,7 +147,7 @@
       { "name": "Chicken", "quantity": "100g" },
       { "name": "Beef / Meat", "quantity": "150g" },
       { "name": "Injera", "quantity": "2" },
-      { "name": "Sauce", "quantity": "1" },
+      { "name": "Sauce/Sugo", "quantity": "1" },
       { "name": "Gomen (Collard Greens)", "quantity": "160g" },
       { "name": "Ayb (Cottage Cheese)", "quantity": "1" },
       { "name": "Berbere", "quantity": "1" }
@@ -319,12 +177,18 @@
     "ingredients": [
       { "name": "Onion", "quantity": "1" },
       { "name": "Tomato", "quantity": "1" },
-      { "name": "Pepper", "quantity": "1" },
-      { "name": "Salad", "quantity": "1" },
+      { "name": "Pepper (Green/Chili)", "quantity": "1" },
+      { "name": "Salad Greens", "quantity": "1" },
       { "name": "Cucumber", "quantity": "1" },
       { "name": "Shiro (Sheno)", "quantity": "1" },
       { "name": "Injera", "quantity": "1" },
       { "name": "Shiro (Sheno)", "quantity": "1 tbsp" }
+    ]
+  },
+  {
+    "menuItem": "French Fries",
+    "ingredients": [
+      { "name": "Potato", "quantity": "1" }
     ]
   },
   {
@@ -349,7 +213,322 @@
       { "name": "Avocado", "quantity": "1" },
       { "name": "Honey", "quantity": "30g" },
       { "name": "Bread", "quantity": "3" },
-      { "name": "Pita", "quantity": "1" }
+      { "name": "Pita Bread", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Espresso Shot",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "18g" }
+    ]
+  },
+  {
+    "menuItem": "Americano",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" }
+    ]
+  },
+  {
+    "menuItem": "Macchiato Single",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Milk", "quantity": "125 ml" }
+    ]
+  },
+  {
+    "menuItem": "Macchiato Double",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Milk", "quantity": "220 ml" }
+    ]
+  },
+  {
+    "menuItem": "Fasting Macchiato",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Coffee Mate/Non-Dairy Creamer", "quantity": "30g" }
+    ]
+  },
+  {
+    "menuItem": "Caramel Macchiato",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Milk", "quantity": "125 ml" },
+      { "name": "Caramel Syrup", "quantity": "15 ml" }
+    ]
+  },
+  {
+    "menuItem": "Latte",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Milk", "quantity": "220 ml" }
+    ]
+  },
+  {
+    "menuItem": "Cappuccino",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Milk", "quantity": "220 ml" },
+      { "name": "Nestle/Milk Powder", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Hot Chocolate",
+    "ingredients": [
+      { "name": "Milk", "quantity": "130 ml" },
+      { "name": "Chocolate/Cocoa Powder", "quantity": "15g" },
+      { "name": "Nestle/Milk Powder", "quantity": "10g" },
+      { "name": "Cinnamon Powder", "quantity": "3g" }
+    ]
+  },
+  {
+    "menuItem": "Mocha",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Chocolate Syrup", "quantity": "30 ml" },
+      { "name": "Milk", "quantity": "220 ml" }
+    ]
+  },
+  {
+    "menuItem": "Tea w/ Coffee",
+    "ingredients": [
+      { "name": "Tea", "quantity": "1" },
+      { "name": "Coffee Beans/Powder", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Special Tea",
+    "ingredients": [
+      { "name": "Tea", "quantity": "1" },
+      { "name": "Orange", "quantity": "1" },
+      { "name": "Ginger", "quantity": "1" },
+      { "name": "Honey", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Plain Milk",
+    "ingredients": [
+      { "name": "Milk", "quantity": "250 ml" }
+    ]
+  },
+  {
+    "menuItem": "Yemeni Tea",
+    "ingredients": [
+      { "name": "Milk", "quantity": "60 ml" },
+      { "name": "Lebeni/Yoghurt Drink", "quantity": "60 ml" }
+    ]
+  },
+  {
+    "menuItem": "V60 Coffee",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "17g" }
+    ]
+  },
+  {
+    "menuItem": "Jebena Buna",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Special Juice Mix",
+    "ingredients": [
+      { "name": "Milk", "quantity": "180 ml" },
+      { "name": "Papaya", "quantity": "150g" },
+      { "name": "Avocado", "quantity": "150g" },
+      { "name": "Strawberry", "quantity": "100g" },
+      { "name": "Sugar", "quantity": "45g" }
+    ]
+  },
+  {
+    "menuItem": "Orange Juice",
+    "ingredients": [
+      { "name": "Orange", "quantity": "1" },
+      { "name": "Sugar", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Pineapple Juice",
+    "ingredients": [
+      { "name": "Pineapple", "quantity": "1" },
+      { "name": "Sugar", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Strawberry Juice",
+    "ingredients": [
+      { "name": "Strawberry", "quantity": "200g" },
+      { "name": "Sugar", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Papaya Juice",
+    "ingredients": [
+      { "name": "Papaya", "quantity": "450g" },
+      { "name": "Sugar", "quantity": "60g" }
+    ]
+  },
+  {
+    "menuItem": "Avocado Juice",
+    "ingredients": [
+      { "name": "Avocado", "quantity": "1" },
+      { "name": "Sugar", "quantity": "60g" }
+    ]
+  },
+  {
+    "menuItem": "Mango Juice",
+    "ingredients": [
+      { "name": "Mango", "quantity": "500g" },
+      { "name": "Sugar", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Smoothie",
+    "ingredients": [
+      { "name": "Banana", "quantity": "1" },
+      { "name": "Strawberry", "quantity": "1" },
+      { "name": "Milk", "quantity": "1" },
+      { "name": "Sugar", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Strawberry Milkshake",
+    "ingredients": [
+      { "name": "Strawberry", "quantity": "1" },
+      { "name": "Ice Cream", "quantity": "1" },
+      { "name": "Strawberry Syrup", "quantity": "1" },
+      { "name": "Milk", "quantity": "1" },
+      { "name": "Shanti Cream/Whipping Cream", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Banana Milkshake",
+    "ingredients": [
+      { "name": "Banana", "quantity": "1" },
+      { "name": "Ice Cream", "quantity": "1" },
+      { "name": "Milk", "quantity": "1" },
+      { "name": "Shanti Cream/Whipping Cream", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Vanilla Milkshake",
+    "ingredients": [
+      { "name": "Ice Cream", "quantity": "1" },
+      { "name": "Milk", "quantity": "1" },
+      { "name": "Vanilla", "quantity": "1" },
+      { "name": "Shanti Cream/Whipping Cream", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Oreo Milkshake",
+    "ingredients": [
+      { "name": "Oreo", "quantity": "1" },
+      { "name": "Ice Cream", "quantity": "1" },
+      { "name": "Milk", "quantity": "1" },
+      { "name": "Shanti Cream/Whipping Cream", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Iced Coffee",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" }
+    ]
+  },
+  {
+    "menuItem": "Iced Latte",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Milk", "quantity": "250 ml" },
+      { "name": "Sugar", "quantity": "15g" }
+    ]
+  },
+  {
+    "menuItem": "Iced Caramel Latte",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Milk", "quantity": "250 ml" },
+      { "name": "Sugar", "quantity": "10g" },
+      { "name": "Caramel Syrup", "quantity": "30 ml" }
+    ]
+  },
+  {
+    "menuItem": "Iced Cinnamon Latte",
+    "ingredients": [
+      { "name": "Instant Coffee/Nescafe", "quantity": "17g" },
+      { "name": "Cinnamon Stick/Bark", "quantity": "7g" },
+      { "name": "Vanilla", "quantity": "1" },
+      { "name": "Sugar", "quantity": "15g" },
+      { "name": "Milk", "quantity": "250 ml" }
+    ]
+  },
+  {
+    "menuItem": "Fasting Iced Latte",
+    "ingredients": [
+      { "name": "Coffee Mate/Non-Dairy Creamer", "quantity": "30g" },
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Sugar", "quantity": "15g" }
+    ]
+  },
+  {
+    "menuItem": "Creamy Latte",
+    "ingredients": [
+      { "name": "Ice Cream", "quantity": "20g" },
+      { "name": "Milk", "quantity": "250 ml" },
+      { "name": "Instant Coffee/Nescafe", "quantity": "7g" },
+      { "name": "Sugar", "quantity": "15g" },
+      { "name": "Vanilla", "quantity": "10 ml" }
+    ]
+  },
+  {
+    "menuItem": "Iced Mocha",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Milk", "quantity": "250 ml" },
+      { "name": "Chocolate Syrup", "quantity": "30 ml" }
+    ]
+  },
+  {
+    "menuItem": "Spanish Latte",
+    "ingredients": [
+      { "name": "Milk", "quantity": "250 ml" },
+      { "name": "Vanilla Powder", "quantity": "15 ml" },
+      { "name": "Caramel Syrup", "quantity": "15 ml" },
+      { "name": "Sugar", "quantity": "10g" },
+      { "name": "Coffee Beans/Powder", "quantity": "16g" }
+    ]
+  },
+  {
+    "menuItem": "Shakerato",
+    "ingredients": [
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Honey", "quantity": "30 ml" }
+    ]
+  },
+  {
+    "menuItem": "Espresso Tonic",
+    "ingredients": [
+      { "name": "Orange", "quantity": "60 ml" },
+      { "name": "Sugar Syrup", "quantity": "10g" },
+      { "name": "Coffee Beans/Powder", "quantity": "16g" },
+      { "name": "Sprite/Soda", "quantity": "60 ml" }
+    ]
+  },
+  {
+    "menuItem": "Hibiscus Tea",
+    "ingredients": [
+      { "name": "Cinnamon Stick/Bark", "quantity": "1" },
+      { "name": "Sugar", "quantity": "1" },
+      { "name": "Hibiscus/Kerkede", "quantity": "1" },
+      { "name": "Orange", "quantity": "1" },
+      { "name": "Honey", "quantity": "1" }
+    ]
+  },
+  {
+    "menuItem": "Mojito",
+    "ingredients": [
+      { "name": "Sprite/Soda", "quantity": "160 ml" },
+      { "name": "Strawberry Syrup", "quantity": "80 ml" },
+      { "name": "Mint/Lime (for Mojito)", "quantity": "1" }
     ]
   }
 ]

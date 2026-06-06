@@ -6,7 +6,7 @@ import {
   getRevenue,
   getPeakHours,
 } from "../controllers/analytics.controller";
-import { authenticate, requireAdmin } from "../middleware/auth";
+import { authenticate, requireAdminAccess } from "../middleware/auth";
 
 const router = Router();
 
@@ -15,7 +15,7 @@ const router = Router();
  * Get dashboard aggregated data (admin only)
  * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
  */
-router.get("/dashboard", authenticate, requireAdmin, getDashboard);
+router.get("/dashboard", authenticate, requireAdminAccess, getDashboard);
 
 /**
  * GET /api/analytics/consumption
@@ -23,7 +23,7 @@ router.get("/dashboard", authenticate, requireAdmin, getDashboard);
  * Query params: ingredientId (optional)
  * Requirements: 6.1
  */
-router.get("/consumption", authenticate, requireAdmin, getConsumption);
+router.get("/consumption", authenticate, requireAdminAccess, getConsumption);
 
 /**
  * GET /api/analytics/top-items
@@ -31,7 +31,7 @@ router.get("/consumption", authenticate, requireAdmin, getConsumption);
  * Query params: limit (default: 10), startDate, endDate
  * Requirements: 6.2
  */
-router.get("/top-items", authenticate, requireAdmin, getTopItems);
+router.get("/top-items", authenticate, requireAdminAccess, getTopItems);
 
 /**
  * GET /api/analytics/revenue
@@ -39,13 +39,13 @@ router.get("/top-items", authenticate, requireAdmin, getTopItems);
  * Query params: period (daily|weekly|monthly), startDate, endDate
  * Requirements: 6.3, 6.4
  */
-router.get("/revenue", authenticate, requireAdmin, getRevenue);
+router.get("/revenue", authenticate, requireAdminAccess, getRevenue);
 
 /**
  * GET /api/analytics/peak-hours
  * Get peak ordering hours (admin only)
  * Requirements: 6.5
  */
-router.get("/peak-hours", authenticate, requireAdmin, getPeakHours);
+router.get("/peak-hours", authenticate, requireAdminAccess, getPeakHours);
 
 export default router;

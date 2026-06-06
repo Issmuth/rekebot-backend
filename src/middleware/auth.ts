@@ -7,7 +7,7 @@ export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
     email: string;
-    role: "ADMIN" | "EMPLOYEE";
+    role: "ADMIN" | "CASHIER" | "EMPLOYEE";
   };
   token?: string;
 }
@@ -76,6 +76,37 @@ export const requireAdmin = async (
     }
 
     if (req.user.role !== "ADMIN") {
+      throw new AppError(
+        403,
+        ErrorCode.FORBIDDEN_ADMIN_ONLY,
+        "Admin access required"
+      );
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Admin-access middleware - allows admin and cashier users to view admin pages
+ */
+export const requireAdminAccess = async (
+  req: AuthenticatedRequest,
+  _res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user) {
+      throw new AppError(
+        401,
+        ErrorCode.AUTH_INVALID_CREDENTIALS,
+        "Authentication required"
+      );
+    }
+
+    if (req.user.role !== "ADMIN" && req.user.role !== "CASHIER") {
       throw new AppError(
         403,
         ErrorCode.FORBIDDEN_ADMIN_ONLY,

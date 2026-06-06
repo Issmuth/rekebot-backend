@@ -5,11 +5,12 @@ import {
   getLowStockIngredients,
   createIngredient,
   updateIngredient,
+  deleteIngredient,
   updateStock,
   checkAvailability,
   getInventoryHistory,
 } from "../controllers/inventory.controller";
-import { authenticate, requireAdmin } from "../middleware/auth";
+import { authenticate, requireAdmin, requireAdminAccess } from "../middleware/auth";
 
 const router = Router();
 
@@ -19,7 +20,7 @@ const router = Router();
  * Requirements: 4.4
  * Note: This route must be defined before /:id to avoid conflicts
  */
-router.get("/history", authenticate, requireAdmin, getInventoryHistory);
+router.get("/history", authenticate, requireAdminAccess, getInventoryHistory);
 
 /**
  * GET /api/ingredients/low-stock
@@ -27,7 +28,7 @@ router.get("/history", authenticate, requireAdmin, getInventoryHistory);
  * Requirements: 4.3
  * Note: This route must be defined before /:id to avoid conflicts
  */
-router.get("/low-stock", authenticate, requireAdmin, getLowStockIngredients);
+router.get("/low-stock", authenticate, requireAdminAccess, getLowStockIngredients);
 
 /**
  * GET /api/ingredients/availability/:menuItemId
@@ -41,13 +42,13 @@ router.get("/availability/:menuItemId", checkAvailability);
  * List all ingredients
  * Requirements: 4.4
  */
-router.get("/", authenticate, requireAdmin, getAllIngredients);
+router.get("/", authenticate, requireAdminAccess, getAllIngredients);
 
 /**
  * GET /api/ingredients/:id
  * Get a specific ingredient by ID with stock adjustments
  */
-router.get("/:id", authenticate, requireAdmin, getIngredientById);
+router.get("/:id", authenticate, requireAdminAccess, getIngredientById);
 
 /**
  * POST /api/ingredients
@@ -62,6 +63,12 @@ router.post("/", authenticate, requireAdmin, createIngredient);
  * Requirements: 4.1
  */
 router.put("/:id", authenticate, requireAdmin, updateIngredient);
+
+/**
+ * DELETE /api/ingredients/:id
+ * Delete an ingredient (admin only)
+ */
+router.delete("/:id", authenticate, requireAdmin, deleteIngredient);
 
 /**
  * POST /api/ingredients/:id/stock

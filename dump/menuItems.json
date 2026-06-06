@@ -1,282 +1,64 @@
 [
-  {
-    "name": "Tuna Salad",
-    "nameAm": "ቱና ሳላድ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Mixed Salad",
-    "nameAm": "ሚክስድ ሳላድ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Macaroni Salad",
-    "nameAm": "መኮሮኒ ሳላድ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Fruit Punch",
-    "nameAm": "ፍራፍሬ ጁስ",
-    "station": "BAR",
-    "category": "Drinks",
-    "categoryAm": "መጠጥ",
-    "price": 0
-  },
-  {
-    "name": "Tuna Sandwich",
-    "nameAm": "ቱና ሳንድዊች",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Chicken Wrap",
-    "nameAm": "ቺከን ራፕ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Beef Wrap",
-    "nameAm": "ቢፍ ራፕ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Falafel Wrap",
-    "nameAm": "ፋላፌል ራፕ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Club Sandwich",
-    "nameAm": "ክለብ ሳንድዊች",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Egg Sandwich",
-    "nameAm": "እንቁላል ሳንድዊች",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Vegetable Rice",
-    "nameAm": "አትክልት በሩዝ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Chicken Curry",
-    "nameAm": "ቺከን ካሪ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Potato Curry",
-    "nameAm": "ድንች ወጥ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Chicken Fried Rice",
-    "nameAm": "ቺከን ፍራይድ ራይስ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Beef Fried Rice",
-    "nameAm": "ቢፍ ፍራይድ ራይስ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Croissant Sandwich",
-    "nameAm": "ክሮዋሳን ሳንድዊች",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Scrambled Egg",
-    "nameAm": "የተምታታ እንቁላል",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Pancake",
-    "nameAm": "ፓንኬክ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Waffle",
-    "nameAm": "ዋፍል",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "French Toast",
-    "nameAm": "ፍሬንች ቶስት",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Avocado Sandwich",
-    "nameAm": "አቮካዶ ሳንድዊች",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Chechebsa",
-    "nameAm": "ጨጨብሳ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Fasting Chechebsa",
-    "nameAm": "የጾም ጨጨብሳ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Ful",
-    "nameAm": "ፉል",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Omelet",
-    "nameAm": "ኦምሌት",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Chicken Omelet",
-    "nameAm": "ቺከን ኦምሌት",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Cheese Omelet",
-    "nameAm": "ቺዝ ኦምሌት",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Chicken Salad",
-    "nameAm": "ቺከን ሳላድ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Red Meat Combo",
-    "nameAm": "ቀይ ስጋ ኮምቦ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Shiro",
-    "nameAm": "ሽሮ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Shiro w Veg",
-    "nameAm": "ሽሮ በአትክልት",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Shiro w Salad",
-    "nameAm": "ሽሮ በሳላድ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Lentil Sambusa",
-    "nameAm": "የምስር ሳምቡሳ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Beef Sambusa",
-    "nameAm": "የስጋ ሳምቡሳ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  },
-  {
-    "name": "Special Breakfast Combo",
-    "nameAm": "ስፔሻል ቁርስ",
-    "station": "KITCHEN",
-    "category": "Food",
-    "categoryAm": "ምግብ",
-    "price": 0
-  }
+  { "name": "Croissant Sandwich", "nameAm": "ክሮዋሳን ሳንድዊች", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Egg Sandwich", "nameAm": "እንቁላል ሳንድዊች", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Scrambled Egg", "nameAm": "የተምታታ እንቁላል", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Pancake", "nameAm": "ፓንኬክ", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Waffle", "nameAm": "ዋፍል", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "French Toast", "nameAm": "ፍሬንች ቶስት", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Avocado Sandwich", "nameAm": "አቮካዶ ሳንድዊች", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Chechebsa", "nameAm": "ጨጨብሳ", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Fasting Chechebsa", "nameAm": "የጾም ጨጨብሳ", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Ful", "nameAm": "ፉል", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Omelet", "nameAm": "ኦምሌት", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Chicken Omelet", "nameAm": "ቺከን ኦምሌት", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Cheese Omelet", "nameAm": "ቺዝ ኦምሌት", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Chicken Salad", "nameAm": "ቺከን ሳላድ", "station": "KITCHEN", "category": "Food", "categoryAm": "ምግብ", "price": 0 },
+  { "name": "Red Meat Combo", "nameAm": "ቀይ ስጋ ኮምቦ", "station": "KITCHEN", "category": "Food", "categoryAm": "ምግብ", "price": 0 },
+  { "name": "Shiro", "nameAm": "ሽሮ", "station": "KITCHEN", "category": "Food", "categoryAm": "ምግብ", "price": 0 },
+  { "name": "Shiro w Veg", "nameAm": "ሽሮ በአትክልት", "station": "KITCHEN", "category": "Food", "categoryAm": "ምግብ", "price": 0 },
+  { "name": "Shiro w Salad", "nameAm": "ሽሮ በሳላድ", "station": "KITCHEN", "category": "Food", "categoryAm": "ምግብ", "price": 0 },
+  { "name": "French Fries", "nameAm": "ፍሬንች ፍራይስ", "station": "KITCHEN", "category": "Food", "categoryAm": "ምግብ", "price": 0 },
+  { "name": "Lentil Sambusa", "nameAm": "የምስር ሳምቡሳ", "station": "KITCHEN", "category": "Food", "categoryAm": "ምግብ", "price": 0 },
+  { "name": "Beef Sambusa", "nameAm": "የስጋ ሳምቡሳ", "station": "KITCHEN", "category": "Food", "categoryAm": "ምግብ", "price": 0 },
+  { "name": "Special Breakfast Combo", "nameAm": "ስፔሻል ቁርስ ኮምቦ", "station": "KITCHEN", "category": "Breakfast", "categoryAm": "ቁርስ", "price": 0 },
+  { "name": "Espresso Shot", "nameAm": "ኢስፕሬሶ", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Americano", "nameAm": "አሜሪካኖ", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Macchiato Single", "nameAm": "ማኪያቶ (ሲንግል)", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Macchiato Double", "nameAm": "ማኪያቶ (ደብል)", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Fasting Macchiato", "nameAm": "የጾም ማኪያቶ", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Caramel Macchiato", "nameAm": "ካራሜል ማኪያቶ", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Latte", "nameAm": "ላቴ", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Cappuccino", "nameAm": "ካፑቺኖ", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Hot Chocolate", "nameAm": "ሆት ቸኮሌት", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Mocha", "nameAm": "ሞካ", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Tea w/ Coffee", "nameAm": "ሻይ በቡና", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Special Tea", "nameAm": "ስፔሻል ሻይ", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Plain Milk", "nameAm": "ወተት", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Yemeni Tea", "nameAm": "የየመን ሻይ", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "V60 Coffee", "nameAm": "ቪ-60 ቡና", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Jebena Buna", "nameAm": "ጀበና ቡና", "station": "BAR", "category": "Hot Drinks", "categoryAm": "ሞቅ ያሉ መጠጦች", "price": 0 },
+  { "name": "Special Juice Mix", "nameAm": "ስፔሻል ጁስ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Orange Juice", "nameAm": "የብርቱካን ጁስ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Pineapple Juice", "nameAm": "የአናናስ ጁስ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Strawberry Juice", "nameAm": "የእንጆሪ ጁስ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Papaya Juice", "nameAm": "የፓፓያ ጁስ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Avocado Juice", "nameAm": "የአቮካዶ ጁስ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Mango Juice", "nameAm": "የማንጎ ጁስ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Smoothie", "nameAm": "ስሙዚ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Strawberry Milkshake", "nameAm": "የእንጆሪ ሚልክሼክ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Banana Milkshake", "nameAm": "የሙዝ ሚልክሼክ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Vanilla Milkshake", "nameAm": "የቫኒላ ሚልክሼክ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Oreo Milkshake", "nameAm": "የኦሪዮ ሚልክሼክ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Iced Coffee", "nameAm": "አይስድ ኮፊ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Iced Latte", "nameAm": "አይስድ ላቴ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Iced Caramel Latte", "nameAm": "አይስድ ካራሜል ላቴ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Iced Cinnamon Latte", "nameAm": "አይስድ ሲናሞን ላቴ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Fasting Iced Latte", "nameAm": "የጾም አይስድ ላቴ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Creamy Latte", "nameAm": "ክሪሚ ላቴ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Iced Mocha", "nameAm": "አይስድ ሞካ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Spanish Latte", "nameAm": "ስፓኒሽ ላቴ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Shakerato", "nameAm": "ሻከራቶ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Espresso Tonic", "nameAm": "ኢስፕሬሶ ቶኒክ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Hibiscus Tea", "nameAm": "የከርከዴ ሻይ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 },
+  { "name": "Mojito", "nameAm": "ሞሂቶ", "station": "BAR", "category": "Cold Drinks", "categoryAm": "ቀዝቃዛ መጠጦች", "price": 0 }
 ]

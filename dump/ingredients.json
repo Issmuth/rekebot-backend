@@ -1,289 +1,62 @@
 [
-  {
-    "name": "Tomato",
-    "nameAm": "ቲማቲም",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Onion",
-    "nameAm": "ሽንኩርት",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Pepper (Green/Chili)",
-    "nameAm": "ቃሪያ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Cucumber",
-    "nameAm": "ኪያር",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Avocado",
-    "nameAm": "አቮካዶ",
-    "unit": "pcs",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Tuna",
-    "nameAm": "ቱና",
-    "unit": "cans",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Bread",
-    "nameAm": "ዳቦ",
-    "unit": "pcs",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Carrot",
-    "nameAm": "ካሮት",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Macaroni",
-    "nameAm": "መኮሮኒ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Parsley",
-    "nameAm": "ፓርሲሌ",
-    "unit": "bunch",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Mixed Fruit",
-    "nameAm": "ፍራፍሬ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Potato",
-    "nameAm": "ድንች",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Chicken",
-    "nameAm": "ዶሮ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Flour",
-    "nameAm": "ዱቄት",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Mayonnaise",
-    "nameAm": "ማዮኔዝ",
-    "unit": "litres",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Ketchup",
-    "nameAm": "ኬቻፕ",
-    "unit": "litres",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Beef / Meat",
-    "nameAm": "ሥጋ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Falafel",
-    "nameAm": "ፋላፌል",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Egg",
-    "nameAm": "እንቁላል",
-    "unit": "pcs",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Zucchini",
-    "nameAm": "ዙኪኒ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Broccoli",
-    "nameAm": "ብሮኮሊ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Cabbage",
-    "nameAm": "ጥቅል ጎመን",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Rice",
-    "nameAm": "ሩዝ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Sauce",
-    "nameAm": "ሶስ/ሱጎ",
-    "unit": "litres",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Curry Powder",
-    "nameAm": "ካሪ ፓውደር",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Croissant",
-    "nameAm": "ክሮዋሳን",
-    "unit": "pcs",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Cheese",
-    "nameAm": "ቺዝ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Sugar",
-    "nameAm": "ስኳር",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Vanilla",
-    "nameAm": "ቫኒላ",
-    "unit": "bottle",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Baking Powder",
-    "nameAm": "ቤኪንግ ፓውደር",
-    "unit": "tin",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Syrup",
-    "nameAm": "ሲሮፕ",
-    "unit": "bottle",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Strawberry",
-    "nameAm": "እንጆሪ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Shiro (Sheno)",
-    "nameAm": "ሽሮ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Berbere",
-    "nameAm": "በርበሬ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Ful (Fava Beans)",
-    "nameAm": "ፉል",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Injera",
-    "nameAm": "እንጀራ",
-    "unit": "pcs",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Gomen (Collard Greens)",
-    "nameAm": "ጎመን",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Ayb (Cottage Cheese)",
-    "nameAm": "አይብ",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Lentil",
-    "nameAm": "ምስር",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Honey",
-    "nameAm": "ማር",
-    "unit": "kg",
-    "currentStock": "0",
-    "minThreshold": "1"
-  },
-  {
-    "name": "Pita",
-    "nameAm": "ፒታ",
-    "unit": "pcs",
-    "currentStock": "0",
-    "minThreshold": "1"
-  }
+  { "name": "Croissant", "nameAm": "ክሮዋሳን", "unit": "pcs", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Egg", "nameAm": "እንቁላል", "unit": "pcs", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Cheese", "nameAm": "ቺዝ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Bread", "nameAm": "ዳቦ", "unit": "pcs", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Onion", "nameAm": "ሽንኩርት", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Tomato", "nameAm": "ቲማቲም", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Pepper (Green/Chili)", "nameAm": "ቃሪያ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Potato", "nameAm": "ድንች", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Flour", "nameAm": "ዱቄት", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Sugar", "nameAm": "ስኳር", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Vanilla", "nameAm": "ቫኒላ", "unit": "bottle", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Baking Powder", "nameAm": "ቤኪንግ ፓውደር", "unit": "tin", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Syrup", "nameAm": "ሲሮፕ", "unit": "bottle", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Strawberry", "nameAm": "እንጆሪ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Avocado", "nameAm": "አቮካዶ", "unit": "pcs", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Shiro (Sheno)", "nameAm": "ሽሮ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Ketchup", "nameAm": "ኬቻፕ", "unit": "litres", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Berbere", "nameAm": "በርበሬ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Ful (Fava Beans)", "nameAm": "ፉል", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Chicken", "nameAm": "ዶሮ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Salad Greens", "nameAm": "የሳላዳ ቅጠል", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Cucumber", "nameAm": "ኪያር", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Beef / Meat", "nameAm": "ሥጋ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Injera", "nameAm": "እንጀራ", "unit": "pcs", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Sauce/Sugo", "nameAm": "ስጎ", "unit": "litres", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Gomen (Collard Greens)", "nameAm": "ጎመን", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Ayb (Cottage Cheese)", "nameAm": "አይብ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Carrot", "nameAm": "ካሮት", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Zucchini", "nameAm": "ዙኪኒ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Cabbage", "nameAm": "ጥቅል ጎመን", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Broccoli", "nameAm": "ብሮኮሊ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Lentil", "nameAm": "ምስር", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Honey", "nameAm": "ማር", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Pita Bread", "nameAm": "ፒታ ዳቦ", "unit": "pcs", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Coffee Beans/Powder", "nameAm": "ቡና", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Milk", "nameAm": "ወተት", "unit": "litres", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Coffee Mate/Non-Dairy Creamer", "nameAm": "ኮፊ ሜት", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Caramel Syrup", "nameAm": "ካራሜል ሲሮፕ", "unit": "bottle", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Nestle/Milk Powder", "nameAm": "ነስቲላ/የወተት ዱቄት", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Chocolate/Cocoa Powder", "nameAm": "ኮኮዋ ፓውደር", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Cinnamon Powder", "nameAm": "ቀረፋ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Chocolate Syrup", "nameAm": "ቸኮሌት ሲሮፕ", "unit": "bottle", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Tea", "nameAm": "ሻይ ቅጠል", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Orange", "nameAm": "ብርቱካን", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Ginger", "nameAm": "ዝንጅብል", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Lebeni/Yoghurt Drink", "nameAm": "ለበን/እርጎ", "unit": "litres", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Papaya", "nameAm": "ፓፓያ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Banana", "nameAm": "ሙዝ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Mango", "nameAm": "ማንጎ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Pineapple", "nameAm": "አናናስ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Ice Cream", "nameAm": "አይስ ክሬም", "unit": "litres", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Strawberry Syrup", "nameAm": "የእንጆሪ ሲሮፕ", "unit": "bottle", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Shanti Cream/Whipping Cream", "nameAm": "ሻንቲ ክሬም", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Oreo", "nameAm": "ኦሪዮ", "unit": "pcs", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Instant Coffee/Nescafe", "nameAm": "ኔስካፌ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Cinnamon Stick/Bark", "nameAm": "ቀረፋ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Sugar Syrup", "nameAm": "የስኳር ሲሮፕ", "unit": "bottle", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Sprite/Soda", "nameAm": "ስፕራይት", "unit": "bottle", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Hibiscus/Kerkede", "nameAm": "ከርከዴ", "unit": "kg", "currentStock": "0", "minThreshold": "1" },
+  { "name": "Mint/Lime (for Mojito)", "nameAm": "ናና/ሎሚ", "unit": "kg", "currentStock": "0", "minThreshold": "1" }
 ]

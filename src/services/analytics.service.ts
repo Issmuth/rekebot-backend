@@ -1,4 +1,13 @@
-import prisma from "../lib/prisma";
+import { and, eq, gte, lt, lte, sql } from "drizzle-orm";
+import {
+  ingredients,
+  menuItems,
+  orderItems,
+  orders,
+  stockAdjustments,
+  users,
+} from "../db/schema";
+import { db } from "../lib/drizzle";
 import { DashboardData, ConsumptionData, DateRange } from "../types";
 
 export interface TopItemData {
@@ -26,8 +35,12 @@ export class AnalyticsService {
    * Get dashboard aggregated data
    * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
    */
-  async getDashboard(): Promise<DashboardData> {
-    const now = new Date();
+  async getDashboard(targetDate?: Date): Promise<DashboardData> {
+    const now = targetDate ? new Date(targetDate) : new Date();
+    // Use the end of the target date if a date is provided, otherwise current time
+    if (targetDate) {
+      now.setHours(23, 59, 59, 999);
+    }
 
     // Calculate date ranges
     const todayStart = new Date(
@@ -45,6 +58,9 @@ export class AnalyticsService {
       todayRevenue,
       weeklyRevenue,
       monthlyRevenue,
+      todayTips,
+      weeklyTips,
+      monthlyTips,
       topItems,
       lowStockCount,
       pendingOrders,
@@ -52,6 +68,9 @@ export class AnalyticsService {
       this.getRevenueForPeriod({ start: todayStart, end: now }),
       this.getRevenueForPeriod({ start: weekStart, end: now }),
       this.getRevenueForPeriod({ start: monthStart, end: now }),
+      this.getTipsForPeriod({ start: todayStart, end: now }),
+      this.getTipsForPeriod({ start: weekStart, end: now }),
+      this.getTipsForPeriod({ start: monthStart, end: now }),
       this.getTopItemsInternal(5, { start: monthStart, end: now }),
       this.getLowStockCount(),
       this.getPendingOrdersCount(),
@@ -61,6 +80,9 @@ export class AnalyticsService {
       todayRevenue,
       weeklyRevenue,
       monthlyRevenue,
+      todayTips,
+      weeklyTips,
+      monthlyTips,
       topItems: topItems.map((item) => ({
         name: item.name,
         count: item.count,
@@ -91,18 +113,40 @@ export class AnalyticsService {
       whereClause.ingredientId = ingredientId;
     }
 
-    const adjustments = await prisma.stockAdjustment.findMany({
-      where: whereClause,
-      include: {
-        ingredient: {
-          select: {
-            id: true,
-            name: true,
-            unit: true,
-          },
-        },
-      },
-    });
+    const adjustments = ingredientId
+      ? await db
+          .select({
+            ingredientId: stockAdjustments.ingredientId,
+            quantity: stockAdjustments.quantity,
+            ingredientName: ingredients.name,
+            unit: ingredients.unit,
+          })
+          .from(stockAdjustments)
+          .innerJoin(ingredients, eq(stockAdjustments.ingredientId, ingredients.id))
+          .where(
+            and(
+              gte(stockAdjustments.createdAt, weekAgo),
+              eq(stockAdjustments.reason, "Order fulfillment"),
+              lt(stockAdjustments.quantity, "0"),
+              eq(stockAdjustments.ingredientId, ingredientId)
+            )
+          )
+      : await db
+          .select({
+            ingredientId: stockAdjustments.ingredientId,
+            quantity: stockAdjustments.quantity,
+            ingredientName: ingredients.name,
+            unit: ingredients.unit,
+          })
+          .from(stockAdjustments)
+          .innerJoin(ingredients, eq(stockAdjustments.ingredientId, ingredients.id))
+          .where(
+            and(
+              gte(stockAdjustments.createdAt, weekAgo),
+              eq(stockAdjustments.reason, "Order fulfillment"),
+              lt(stockAdjustments.quantity, "0")
+            )
+          );
 
     // Aggregate by ingredient
     const consumptionMap = new Map<
@@ -123,9 +167,9 @@ export class AnalyticsService {
         existing.totalConsumed += consumed;
       } else {
         consumptionMap.set(adj.ingredientId, {
-          ingredientId: adj.ingredient.id,
-          ingredientName: adj.ingredient.name,
-          unit: adj.ingredient.unit,
+          ingredientId: adj.ingredientId,
+          ingredientName: adj.ingredientName,
+          unit: adj.unit,
           totalConsumed: consumed,
         });
       }
@@ -144,8 +188,12 @@ export class AnalyticsService {
    * Get top ordered menu items ranked by quantity
    * Requirements: 6.2
    */
-  async getTopItems(limit: number, period: DateRange): Promise<TopItemData[]> {
-    return this.getTopItemsInternal(limit, period);
+  async getTopItems(
+    limit: number,
+    period: DateRange,
+    category?: string
+  ): Promise<TopItemData[]> {
+    return this.getTopItemsInternal(limit, period, category);
   }
 
   /**
@@ -153,26 +201,24 @@ export class AnalyticsService {
    * Requirements: 6.3
    */
   async getRevenue(period: DateRange): Promise<RevenueData> {
-    const orders = await prisma.order.findMany({
-      where: {
-        status: "PAID",
-        paidAt: {
-          gte: period.start,
-          lte: period.end,
-        },
-      },
-      include: {
-        waiter: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
+    const orderRows = await db
+      .select({
+        waiterId: orders.waiterId,
+        total: orders.total,
+        waiterName: users.name,
+      })
+      .from(orders)
+      .innerJoin(users, eq(orders.waiterId, users.id))
+      .where(
+        and(
+          eq(orders.status, "PAID"),
+          gte(orders.paidAt, period.start),
+          lte(orders.paidAt, period.end)
+        )
+      );
 
     // Calculate total revenue
-    const total = orders.reduce((sum, order) => sum + Number(order.total), 0);
+    const total = orderRows.reduce((sum, order) => sum + Number(order.total), 0);
 
     // Calculate revenue by waiter
     const waiterRevenueMap = new Map<
@@ -180,7 +226,7 @@ export class AnalyticsService {
       { waiterId: string; waiterName: string; revenue: number }
     >();
 
-    for (const order of orders) {
+    for (const order of orderRows) {
       const existing = waiterRevenueMap.get(order.waiterId);
       const orderTotal = Number(order.total);
 
@@ -188,8 +234,8 @@ export class AnalyticsService {
         existing.revenue += orderTotal;
       } else {
         waiterRevenueMap.set(order.waiterId, {
-          waiterId: order.waiter.id,
-          waiterName: order.waiter.name,
+          waiterId: order.waiterId,
+          waiterName: order.waiterName,
           revenue: orderTotal,
         });
       }
@@ -203,7 +249,7 @@ export class AnalyticsService {
     return {
       total,
       byWaiter,
-      orderCount: orders.length,
+      orderCount: orderRows.length,
     };
   }
 
@@ -213,15 +259,13 @@ export class AnalyticsService {
    */
   async getPeakHours(): Promise<PeakHourData[]> {
     // Get all paid orders
-    const orders = await prisma.order.findMany({
-      where: {
-        status: "PAID",
-      },
-      select: {
-        createdAt: true,
-        total: true,
-      },
-    });
+    const orderRows = await db
+      .select({
+        createdAt: orders.createdAt,
+        total: orders.total,
+      })
+      .from(orders)
+      .where(eq(orders.status, "PAID"));
 
     // Aggregate by hour
     const hourlyData = new Map<
@@ -234,7 +278,7 @@ export class AnalyticsService {
       hourlyData.set(hour, { orderCount: 0, totalValue: 0 });
     }
 
-    for (const order of orders) {
+    for (const order of orderRows) {
       const hour = order.createdAt.getHours();
       const existing = hourlyData.get(hour)!;
       existing.orderCount += 1;
@@ -267,52 +311,50 @@ export class AnalyticsService {
    */
   private async getTopItemsInternal(
     limit: number,
-    period: DateRange
+    period: DateRange,
+    category?: string
   ): Promise<TopItemData[]> {
-    // Get all paid orders in the period with their items
-    const orders = await prisma.order.findMany({
-      where: {
-        status: "PAID",
-        paidAt: {
-          gte: period.start,
-          lte: period.end,
-        },
-      },
-      include: {
-        items: {
-          include: {
-            menuItem: {
-              select: {
-                id: true,
-                name: true,
-                category: true,
-              },
-            },
-          },
-        },
-      },
-    });
+    const conditions = [
+      eq(orders.status, "PAID"),
+      gte(orders.paidAt, period.start),
+      lte(orders.paidAt, period.end),
+    ];
+
+    if (category) {
+      conditions.push(eq(menuItems.category, category));
+    }
+
+    const rows = await db
+      .select({
+        menuItemId: orderItems.menuItemId,
+        quantity: orderItems.quantity,
+        unitPrice: orderItems.unitPrice,
+        menuName: menuItems.name,
+        menuCategory: menuItems.category,
+      })
+      .from(orders)
+      .innerJoin(orderItems, eq(orders.id, orderItems.orderId))
+      .innerJoin(menuItems, eq(orderItems.menuItemId, menuItems.id))
+      .where(and(...conditions));
 
     // Aggregate by menu item
     const itemMap = new Map<string, TopItemData>();
 
-    for (const order of orders) {
-      for (const item of order.items) {
-        const existing = itemMap.get(item.menuItemId);
-        const itemRevenue = Number(item.unitPrice) * item.quantity;
+    for (const item of rows) {
+      const existing = itemMap.get(item.menuItemId);
+      const itemRevenue = Number(item.unitPrice) * item.quantity;
 
-        if (existing) {
-          existing.count += item.quantity;
-          existing.revenue += itemRevenue;
-        } else {
-          itemMap.set(item.menuItemId, {
-            menuItemId: item.menuItem.id,
-            name: item.menuItem.name,
-            category: item.menuItem.category,
-            count: item.quantity,
-            revenue: itemRevenue,
-          });
-        }
+      if (existing) {
+        existing.count += item.quantity;
+        existing.revenue += itemRevenue;
+      } else {
+        itemMap.set(item.menuItemId, {
+          menuItemId: item.menuItemId,
+          name: item.menuName,
+          category: item.menuCategory,
+          count: item.quantity,
+          revenue: itemRevenue,
+        });
       }
     }
 
@@ -326,28 +368,48 @@ export class AnalyticsService {
    * Helper to get revenue for a period
    */
   private async getRevenueForPeriod(period: DateRange): Promise<number> {
-    const result = await prisma.order.aggregate({
-      where: {
-        status: "PAID",
-        paidAt: {
-          gte: period.start,
-          lte: period.end,
-        },
-      },
-      _sum: {
-        total: true,
-      },
-    });
+    const [result] = await db
+      .select({
+        total: sql<number>`coalesce(sum(${orders.total}), 0)`,
+      })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.status, "PAID"),
+          gte(orders.paidAt, period.start),
+          lte(orders.paidAt, period.end)
+        )
+      );
 
-    return Number(result._sum.total || 0);
+    return Number(result?.total || 0);
+  }
+
+  /**
+   * Helper to get tips total for a period
+   */
+  private async getTipsForPeriod(period: DateRange): Promise<number> {
+    const [result] = await db
+      .select({
+        total: sql<number>`coalesce(sum(${orders.tipAmount}), 0)`,
+      })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.status, "PAID"),
+          gte(orders.paidAt, period.start),
+          lte(orders.paidAt, period.end)
+        )
+      );
+
+    return Number(result?.total || 0);
   }
 
   /**
    * Helper to get low stock count
    */
   private async getLowStockCount(): Promise<number> {
-    const ingredients = await prisma.ingredient.findMany();
-    return ingredients.filter(
+    const ingredientRows = await db.select().from(ingredients);
+    return ingredientRows.filter(
       (ing) => Number(ing.currentStock) < Number(ing.minThreshold)
     ).length;
   }
@@ -356,9 +418,12 @@ export class AnalyticsService {
    * Helper to get pending orders count
    */
   private async getPendingOrdersCount(): Promise<number> {
-    return prisma.order.count({
-      where: { status: "PENDING" },
-    });
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(orders)
+      .where(eq(orders.status, "PENDING"));
+
+    return Number(result?.count || 0);
   }
 }
 

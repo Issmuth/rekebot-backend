@@ -10,12 +10,14 @@ import { ErrorCode } from "../utils/errors";
  * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
  */
 export const getDashboard = async (
-  _req: AuthenticatedRequest,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const dashboard = await analyticsService.getDashboard();
+    const { date } = req.query;
+    const targetDate = date ? new Date(date as string) : undefined;
+    const dashboard = await analyticsService.getDashboard(targetDate);
 
     res.json({
       success: true,
@@ -64,6 +66,10 @@ export const getTopItems = async (
 ) => {
   try {
     const limit = parseInt(req.query.limit as string) || 10;
+    const category =
+      typeof req.query.category === "string" && req.query.category.trim()
+        ? req.query.category.trim()
+        : undefined;
     const startDate = req.query.startDate
       ? new Date(req.query.startDate as string)
       : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // Default: last 30 days
@@ -80,10 +86,14 @@ export const getTopItems = async (
       );
     }
 
-    const topItems = await analyticsService.getTopItems(limit, {
-      start: startDate,
-      end: endDate,
-    });
+    const topItems = await analyticsService.getTopItems(
+      limit,
+      {
+        start: startDate,
+        end: endDate,
+      },
+      category
+    );
 
     res.json({
       success: true,
